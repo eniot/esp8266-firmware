@@ -47,7 +47,6 @@ bool NetworkClass::reconnect(String ssid, String password, uint8_t channel, uint
 
 bool NetworkClass::_awaitConnect(unsigned long timeout)
 {
-    Serial.println("NETWORK: Awaiting to connect...");
     unsigned long currTime = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
