@@ -13,6 +13,7 @@ void setup()
     logger_init();
     config_init();
 
+    //config_deactivate();
     if (!config_activated())
     {
         LOG_INFO("Device not activated. Executing activating sequence.");
@@ -20,7 +21,7 @@ void setup()
     }
     else
     {
-        data = config_data();
+        data = config_get();
         PRINTSTATUS("Name", data.name);
         PRINTSTATUS("WiFi", data.wifi_ssid);
 
@@ -28,14 +29,19 @@ void setup()
         if (!data.dhcp)
         {
             PRINTSTATUS("- IP", data.ip.toString() + " netmask " + data.subnet.toString());
-            PRINTSTATUS("- Gateway", data.gateway.toString());
+            PRINTSTATUS("- GW", data.gateway.toString());
         }
+        PRINTSTATUS("DNS", data.dns ? "Custom" : "DHCP");
+        if (data.dns)
+        {
+            PRINTSTATUS("- DNS1", data.dns1.toString());
+            PRINTSTATUS("- DNS2", data.dns1.toString());
+        }
+
         LOG_INFO("Device activated. Connecting to network.");
         Network.init(WIFI_STA, data.name);
-        if (!data.dhcp)
-        {
-            Network.config(data.ip, data.subnet, data.gateway);
-        }
+        Network.config(data.dhcp, data.ip, data.subnet, data.gateway, data.dns, data.dns1, data.dns2);
+
         if (!Network.connect(data.wifi_ssid, data.wifi_password))
         {
             LOG_WARN("Cannot connect to network. Deactivating device.")

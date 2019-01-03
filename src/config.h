@@ -17,6 +17,9 @@ struct activate_data
     IPAddress ip;
     IPAddress subnet;
     IPAddress gateway;
+    bool dns;
+    IPAddress dns1;
+    IPAddress dns2;
 };
 
 struct config_data : activate_data

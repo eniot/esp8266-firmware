@@ -11,7 +11,7 @@ class NetworkClass
 
   public:
     void init(WiFiMode_t mode, String name);
-    void config(IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns1 = (uint32_t)0x00000000, IPAddress dns2 = (uint32_t)0x00000000);
+    void config(bool dhcp, IPAddress ip, IPAddress subnet, IPAddress gateway, bool customDns, IPAddress dns1, IPAddress dns2);
     bool reconnect(String ssid, String password, uint8_t channel, uint8_t bssid[6], unsigned long timeout);
     bool reconnect(String ssid, String password, uint8_t channel, uint8_t bssid[6])
     {

@@ -6,9 +6,23 @@ void NetworkClass::init(WiFiMode_t mode, String name)
     WiFi.hostname(name);
 }
 
-void NetworkClass::config(IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns1, IPAddress dns2)
+void NetworkClass::config(bool dhcp, IPAddress ip, IPAddress subnet, IPAddress gateway, bool customDns, IPAddress dns1, IPAddress dns2)
 {
-    WiFi.config(ip, gateway, subnet, dns1, dns2);
+    if (dhcp && customDns)
+    {
+        WiFi.config(0U, 0U, 0U, dns1, dns2);
+        return;
+    }
+    if (!dhcp && !customDns)
+    {
+        WiFi.config(ip, gateway, subnet);
+        return;
+    }
+    if (!dhcp && customDns)
+    {
+        WiFi.config(ip, gateway, subnet, dns1, dns2);
+        return;
+    }
 }
 
 bool NetworkClass::connect(String ssid, String password, unsigned long timeout)

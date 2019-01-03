@@ -3,14 +3,7 @@
 
 #include <Arduino.h>
 
-void logger_init()
-{
-    Serial.begin(9600);
-    while (!Serial)
-    {
-        ;
-    }
-}
+void logger_init();
 
 #define PRINT(message) Serial.print(message)
 #define PRINTLN(message) Serial.println(message)
@@ -27,20 +20,20 @@ void logger_init()
     PRINT(status);                 \
     NEWLINE;
 
-#ifdef LOG_ENABLED
+#ifndef LOG_DISABLED
 #define LOG(type, message) \
     PRINT("[");            \
     PRINT(type);           \
-    PRINT("[");            \
+    PRINT("]\t");          \
     PRINT(millis());       \
-    PRINT(" : ");          \
+    PRINT("\t");           \
     PRINTLN(message);
 #define LOGF(type, message, args...) \
     PRINT("[");                      \
     PRINT(type);                     \
-    PRINT("[");                      \
+    PRINT("]\t");                    \
     PRINT(millis());                 \
-    PRINT(" : ");                    \
+    PRINT("\t");                     \
     PRINTF(message, args);           \
     NEWLINE;
 #else
