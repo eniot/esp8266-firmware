@@ -13,7 +13,8 @@ void setup()
     logger_init();
     config_init();
 
-    //config_deactivate();
+    config_deactivate_await();
+
     if (!config_activated())
     {
         LOG_INFO("Device not activated. Executing activating sequence.");
@@ -38,10 +39,10 @@ void setup()
             PRINTSTATUS("- DNS2", data.dns1.toString());
         }
 
-        LOG_INFO("Device activated. Connecting to network.");
+        LOG_TRACE("Device activated. Setup Network.");
         Network.init(WIFI_STA, data.name);
         Network.config(data.dhcp, data.ip, data.subnet, data.gateway, data.dns, data.dns1, data.dns2);
-
+        LOG_INFO("Connecting to network");
         if (!Network.connect(data.wifi_ssid, data.wifi_password))
         {
             LOG_WARN("Cannot connect to network. Deactivating device.")

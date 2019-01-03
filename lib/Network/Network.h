@@ -7,7 +7,7 @@
 class NetworkClass
 {
   private:
-    bool _awaitConnect(String message, unsigned long timeout);
+    bool _awaitConnect(unsigned long timeout);
 
   public:
     void init(WiFiMode_t mode, String name);

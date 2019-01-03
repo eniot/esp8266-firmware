@@ -99,6 +99,19 @@ void config_deactivate()
     Data.save();
 }
 
+void config_deactivate_await()
+{
+    PRINT("Press any key to reset device...");
+    long startTime = millis();
+    while (!Serial.available())
+    {
+        long currentTime = millis();
+        if ((startTime + 2000) <= currentTime)
+            return;
+    }
+    config_deactivate();
+}
+
 config_data config_get()
 {
     LOG_TRACE("config_get");
