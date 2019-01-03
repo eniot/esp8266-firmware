@@ -101,7 +101,7 @@ void config_deactivate()
 
 void config_deactivate_await()
 {
-    PRINT("Press any key to reset device...");
+    PRINTLN("Press any key to reset device...");
     long startTime = millis();
     while (!Serial.available())
     {
