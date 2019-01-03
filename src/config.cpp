@@ -34,8 +34,12 @@
 #define _ACCESS_PASSWORD_ADDR (_GATEWAY_ADDR + _GATEWAY_SIZE)
 #define _ACCESS_PASSWORD_SIZE 32
 
+// Device name
+#define _NAME_ADDR (_ACCESS_PASSWORD_ADDR + _ACCESS_PASSWORD_SIZE)
+#define _NAME_SIZE 32
+
 // END EEPROM
-#define _END_ADDR (_ACCESS_PASSWORD_ADDR + _ACCESS_PASSWORD_SIZE)
+#define _END_ADDR (_NAME_ADDR + _NAME_SIZE)
 
 // Public constants
 #define EEPROM_SIZE (_END_ADDR + 1)
@@ -52,6 +56,7 @@ bool config_activated()
 
 void config_activate(activate_data data)
 {
+    Data.write(_NAME_ADDR, data.name);
     Data.write(_ACCESS_PASSWORD_ADDR, data.access);
     Data.write(_WIFI_SSID_ADDR, data.wifi_ssid);
     Data.write(_WIFI_PASSWORD_ADDR, data.wifi_password);
@@ -73,6 +78,7 @@ config_data config_get()
 {
     config_data data;
     data.activated = config_activated();
+    data.name = Data.readStr(_NAME_ADDR, _NAME_SIZE);
     data.wifi_ssid = Data.readStr(_WIFI_SSID_ADDR, _WIFI_SSID_SIZE);
     data.wifi_password = Data.readStr(_WIFI_PASSWORD_ADDR, _WIFI_PASSWORD_SIZE);
     data.access = Data.readStr(_ACCESS_PASSWORD_ADDR, _ACCESS_PASSWORD_SIZE);

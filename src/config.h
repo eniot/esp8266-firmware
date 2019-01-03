@@ -9,6 +9,7 @@
 
 struct activate_data
 {
+    String name;
     String access;
     String wifi_ssid;
     String wifi_password;
