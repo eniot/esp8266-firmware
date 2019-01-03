@@ -24,14 +24,14 @@ void logger_init();
 #define LOG(type, message) \
     PRINT("[");            \
     PRINT(type);           \
-    PRINT("]\t");          \
+    PRINT("] \t");         \
     PRINT(millis());       \
     PRINT("\t");           \
     PRINTLN(message);
 #define LOGF(type, message, args...) \
     PRINT("[");                      \
     PRINT(type);                     \
-    PRINT("]\t");                    \
+    PRINT("] \t");                   \
     PRINT(millis());                 \
     PRINT("\t");                     \
     PRINTF(message, args);           \

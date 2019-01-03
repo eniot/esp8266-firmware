@@ -39,7 +39,7 @@ void setup()
             PRINTSTATUS("- DNS2", data.dns1.toString());
         }
 
-        LOG_TRACE("Device activated. Setup Network.");
+        LOG_TRACE("Device activated.");
         Network.init(WIFI_STA, data.name);
         Network.config(data.dhcp, data.ip, data.subnet, data.gateway, data.dns, data.dns1, data.dns2);
         LOG_INFO("Connecting to network");
