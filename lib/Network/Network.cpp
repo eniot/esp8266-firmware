@@ -8,8 +8,6 @@ void NetworkClass::init(WiFiMode_t mode, String name)
 
 void NetworkClass::config(bool dhcp, IPAddress ip, IPAddress subnet, IPAddress gateway, bool customDns, IPAddress dns1, IPAddress dns2)
 {
-
-    return;
     if (dhcp && customDns)
     {
         WiFi.config(0U, 0U, 0U, dns1, dns2);
@@ -33,7 +31,7 @@ bool NetworkClass::connect(String ssid, String password, unsigned long timeout)
     {
         return true;
     }
-    WiFi.begin("HiFi", "aaaa");
+    WiFi.begin(ssid.c_str(), password.c_str());
     return _awaitConnect(timeout);
 }
 
@@ -50,14 +48,15 @@ bool NetworkClass::reconnect(String ssid, String password, uint8_t channel, uint
 bool NetworkClass::_awaitConnect(unsigned long timeout)
 {
     Serial.println("NETWORK: Awaiting to connect...");
-    unsigned long startTime = millis();
+    unsigned long currTime = 0;
     while (WiFi.status() != WL_CONNECTED)
     {
-        if (WiFi.status() == WL_CONNECT_FAILED || millis() >= (startTime + timeout))
+        if (WiFi.status() == WL_CONNECT_FAILED || currTime >= timeout)
         {
-            Serial.println("NETWORK: Failed to connect");
             return false;
         }
+        delay(500);
+        currTime += 500;
     }
     return true;
 }

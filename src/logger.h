@@ -41,15 +41,35 @@ void logger_init();
 #define LOGF(type, message, args...)
 #endif
 
+#ifdef LOG_LEVEL_ALL
 #define LOG_ERROR(message) LOG("ERROR", message)
 #define LOG_INFO(message) LOG("INFO ", message)
-#define LOG_DEBUG(message) LOG("DEBUG", message)
-#define LOG_TRACE(message) LOG("TRACE", message)
 #define LOG_WARN(message) LOG("WARN ", message)
+#define LOG_TRACE(message) LOG("TRACE", message)
+#elif LOG_LEVEL_INFO
+#define LOG_ERROR(message) LOG("ERROR", message)
+#define LOG_WARN(message) LOG("WARN ", message)
+#define LOG_INFO(message) LOG("INFO ", message)
+#define LOG_TRACE(message)
+#elif LOG_LEVEL_WARN
+#define LOG_ERROR(message) LOG("ERROR", message)
+#define LOG_WARN(message) LOG("WARN ", message)
+#define LOG_INFO(message)
+#define LOG_TRACE(message)
+#elif LOG_LEVEL_ERROR
+#define LOG_ERROR(message) LOG("ERROR", message)
+#define LOG_WARN(message)
+#define LOG_INFO(message)
+#define LOG_TRACE(message)
+#else
+#define LOG_ERROR(message)
+#define LOG_WARN(message)
+#define LOG_INFO(message)
+#define LOG_TRACE(message)
+#endif
 
 #define LOGF_ERROR(message, args...) LOGF("ERROR", message, args)
 #define LOGF_INFO(message, args...) LOGF("INFO", message, args)
-#define LOGF_DEBUG(message, args...) LOGF("DEBUG", message, args)
 #define LOGF_TRACE(message, args...) LOGF("TRACE", message, args)
 #define LOGF_WARN(message, args...) LOGF("WARN", message, args)
 
