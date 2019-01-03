@@ -24,14 +24,14 @@ void logger_init();
 #define LOG(type, message) \
     PRINT("[");            \
     PRINT(type);           \
-    PRINT("] \t");         \
+    PRINT("] ");           \
     PRINT(millis());       \
     PRINT("\t");           \
     PRINTLN(message);
 #define LOGF(type, message, args...) \
     PRINT("[");                      \
     PRINT(type);                     \
-    PRINT("] \t");                   \
+    PRINT("] ");                     \
     PRINT(millis());                 \
     PRINT("\t");                     \
     PRINTF(message, args);           \
@@ -42,10 +42,10 @@ void logger_init();
 #endif
 
 #define LOG_ERROR(message) LOG("ERROR", message)
-#define LOG_INFO(message) LOG("INFO", message)
+#define LOG_INFO(message) LOG("INFO ", message)
 #define LOG_DEBUG(message) LOG("DEBUG", message)
 #define LOG_TRACE(message) LOG("TRACE", message)
-#define LOG_WARN(message) LOG("WARN", message)
+#define LOG_WARN(message) LOG("WARN ", message)
 
 #define LOGF_ERROR(message, args...) LOGF("ERROR", message, args)
 #define LOGF_INFO(message, args...) LOGF("INFO", message, args)
