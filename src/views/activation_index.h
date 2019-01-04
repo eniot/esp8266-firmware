@@ -5,7 +5,7 @@
 #include "html.h"
 #include "config.h"
 
-String view_activation_index_content(activate_data data, String actionTitle)
+String view_activation_index_content(config_activation_t data, String actionTitle)
 {
     String enable_values[2] = {"1", "0"};
     String enable_displays[2] = {"Yes", "No"};
@@ -75,14 +75,12 @@ String view_activation_index_content(activate_data data, String actionTitle)
            )====";
 }
 
-String view_activation_index(activate_data data)
+String view_activation_index(config_activation_t data)
 {
     return "<html lang=\"en\">" +
            html_head("IOT Activation") +
            "<body>" +
-           "<div class='container'>" +
            view_activation_index_content(data, "Activate") +
-           "</div>" +
            "</body>" +
            "</html>";
 }

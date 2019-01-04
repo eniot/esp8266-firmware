@@ -68,7 +68,7 @@ bool config_activated()
     return Data.read(_ACTIVATED_ADDR) == YES;
 }
 
-void config_activate(activate_data data)
+void config_activate(config_activation_t data)
 {
     LOG_TRACE("config_activate");
     Data.write(_NAME_ADDR, data.name);
@@ -112,11 +112,10 @@ void config_deactivate_await()
     config_deactivate();
 }
 
-config_data config_get()
+config_activation_t config_activation_get()
 {
     LOG_TRACE("config_get");
-    config_data data;
-    data.activated = config_activated();
+    config_activation_t data;
     data.name = Data.readStr(_NAME_ADDR, _NAME_SIZE);
     data.wifi_ssid = Data.readStr(_WIFI_SSID_ADDR, _WIFI_SSID_SIZE);
     data.wifi_password = Data.readStr(_WIFI_PASSWORD_ADDR, _WIFI_PASSWORD_SIZE);
@@ -133,6 +132,27 @@ config_data config_get()
     {
         data.dns1.fromString(Data.readStr(_DNS1_ADDR, _DNS1_SIZE));
         data.dns1.fromString(Data.readStr(_DNS2_ADDR, _DNS2_SIZE));
+    }
+    return data;
+}
+
+config_activation_t config_activation_log()
+{
+    config_activation_t data = config_activation_get();
+    PRINTSTATUS("Name", data.name);
+    PRINTSTATUS("WiFi", data.wifi_ssid);
+
+    PRINTSTATUS("DHCP", data.dhcp ? "Enabled" : "Disabled");
+    if (!data.dhcp)
+    {
+        PRINTSTATUS("-IP", data.ip.toString() + " netmask " + data.subnet.toString());
+        PRINTSTATUS("-GW", data.gateway.toString());
+    }
+    PRINTSTATUS("DNS", data.dns ? "Custom" : "DHCP");
+    if (data.dns)
+    {
+        PRINTSTATUS("-DNS1", data.dns1.toString());
+        PRINTSTATUS("-DNS2", data.dns1.toString());
     }
     return data;
 }

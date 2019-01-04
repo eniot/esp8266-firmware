@@ -44,13 +44,13 @@ void activation_execute()
 void _activation_root_handler()
 {
     LOG_TRACE("_activation_root_handler");
-    captiveWebServer.send(200, "text/html", view_activation_index(config_get()));
+    captiveWebServer.send(200, "text/html", view_activation_index(config_activation_get()));
 }
 
 void _activation_save_handler()
 {
     LOG_TRACE("_activation_save_handler");
-    activate_data data;
+    config_activation_t data;
     data.name = captiveWebServer.arg("name");
     data.access = captiveWebServer.arg("access");
     data.wifi_ssid = captiveWebServer.arg("wifi_ssid");

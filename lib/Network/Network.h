@@ -4,6 +4,14 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
+struct connection_info_t
+{
+    IPAddress ip;
+    IPAddress subnet;
+    IPAddress gateway;
+    IPAddress dns;
+};
+
 class NetworkClass
 {
   private:
@@ -22,6 +30,7 @@ class NetworkClass
     {
         return connect(ssid, password, 10000);
     }
+    connection_info_t info();
 };
 
 extern NetworkClass Network;

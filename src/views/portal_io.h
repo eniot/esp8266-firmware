@@ -1,5 +1,5 @@
-#ifndef app_views_portal_index_h
-#define app_views_portal_index_h
+#ifndef app_views_portal_io_h
+#define app_views_portal_io_h
 
 #include <Arduino.h>
 #include "portal.h"
@@ -7,13 +7,13 @@
 #include "config.h"
 #include "menu.h"
 
-String view_portal_index()
+String view_portal_io()
 {
     return "<html lang=\"en\">" +
            html_head("IOT Portal") +
            "<body>" +
            "<div class='container'>" +
-           html_menu(menu_list, menu_size, "Home") +
+           html_menu(menu_list, menu_size, "IO") +
            "</div>" +
            "</body>" +
            "</html>";

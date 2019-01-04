@@ -10,11 +10,13 @@ void logger_init();
 #define NEWLINE PRINTLN("");
 #define PRINTF(message, args...) Serial.printf(message, args)
 #define PRINTSTATUS(name, status) \
+    PRINT("- ");                  \
     PRINT(name);                  \
     PRINT("\t: ");                \
     PRINT(status);                \
     NEWLINE;
 #define PRINTSTATUS2(name, status) \
+    PRINT("- ");                   \
     PRINT(name);                   \
     PRINT("\t\t: ");               \
     PRINT(status);                 \

@@ -60,4 +60,14 @@ bool NetworkClass::_awaitConnect(unsigned long timeout)
     return true;
 }
 
+connection_info_t NetworkClass::info()
+{
+    return connection_info_t{
+        WiFi.localIP(),
+        WiFi.subnetMask(),
+        WiFi.gatewayIP(),
+        WiFi.dnsIP(),
+    };
+}
+
 NetworkClass Network;

@@ -6,7 +6,7 @@
 #include "portal.h"
 #include "logger.h"
 
-config_data data;
+config_activation_t cfg_act;
 
 void setup()
 {
@@ -17,39 +17,26 @@ void setup()
 
     if (!config_activated())
     {
-        LOG_INFO("Device not activated. Executing activating sequence.");
+        LOG_INFO("Executing activating sequence.");
         activation_setup();
     }
     else
     {
-        data = config_get();
-        PRINTSTATUS("Name", data.name);
-        PRINTSTATUS("WiFi", data.wifi_ssid);
-
-        PRINTSTATUS("DHCP", data.dhcp ? "Enabled" : "Disabled");
-        if (!data.dhcp)
+        cfg_act = config_activation_log();
+        Network.init(WIFI_STA, cfg_act.name);
+        Network.config(cfg_act.dhcp, cfg_act.ip, cfg_act.subnet, cfg_act.gateway, cfg_act.dns, cfg_act.dns1, cfg_act.dns2);
+        LOG_TRACE("Connecting to network...");
+        if (!Network.connect(cfg_act.wifi_ssid, cfg_act.wifi_password))
         {
-            PRINTSTATUS("- IP", data.ip.toString() + " netmask " + data.subnet.toString());
-            PRINTSTATUS("- GW", data.gateway.toString());
-        }
-        PRINTSTATUS("DNS", data.dns ? "Custom" : "DHCP");
-        if (data.dns)
-        {
-            PRINTSTATUS("- DNS1", data.dns1.toString());
-            PRINTSTATUS("- DNS2", data.dns1.toString());
-        }
-
-        LOG_TRACE("Device activated.");
-        Network.init(WIFI_STA, data.name);
-        Network.config(data.dhcp, data.ip, data.subnet, data.gateway, data.dns, data.dns1, data.dns2);
-        LOG_INFO("Connecting to network");
-        if (!Network.connect(data.wifi_ssid, data.wifi_password))
-        {
-            LOG_WARN("Cannot connect to network. Deactivating device.")
-            config_deactivate();
+            LOG_WARN("Connection failed!");
+            LOG_INFO("Restarting...");
             ESP.restart();
         }
-        LOG_INFO("Connected to Network " + data.wifi_ssid);
+        LOG_INFO("Connected to Network");
+        connection_info_t cinfo = Network.info();
+        PRINTSTATUS("IP", cinfo.ip.toString() + " netmask " + cinfo.subnet.toString());
+        PRINTSTATUS("GW", cinfo.gateway.toString());
+        PRINTSTATUS("DNS", cinfo.dns.toString());
         portal_setup();
     }
 }
