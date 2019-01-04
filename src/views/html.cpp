@@ -43,6 +43,9 @@ String html_head(String title)
     }
     .menu {
         list-style: none;
+        padding: 0px;
+        display: flex;
+        justify-content: center;
     }
     .menu li {
         display: inline-block;
