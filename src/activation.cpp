@@ -44,7 +44,7 @@ void activation_execute()
 void _activation_root_handler()
 {
     LOG_TRACE("_activation_root_handler");
-    captiveWebServer.send(200, "text/html", view_activation_index);
+    captiveWebServer.send(200, "text/html", view_activation_index(config_get()));
 }
 
 void _activation_save_handler()
