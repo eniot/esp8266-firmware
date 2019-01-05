@@ -16,8 +16,11 @@ ESP8266WebServer captiveWebServer(80);
 void _activation_root_handler();
 void _activation_save_handler();
 
+bool _activated = true;
+
 void activation_setup()
 {
+    _activated = false;
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
     String ssid = "(inactive) " + config_name_get();
@@ -39,6 +42,9 @@ void activation_setup()
 
 void activation_execute()
 {
+    if (_activated)
+        return;
+
     dnsServer.processNextRequest();
     captiveWebServer.handleClient();
 }

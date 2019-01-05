@@ -253,7 +253,7 @@ String _config_mqtt_topic_get()
 config_mqtt_t config_mqtt_get()
 {
     config_mqtt_t data;
-    data.enabled = Data.read(_MQTT_ENABLED_ADDR);
+    data.enabled = config_mqtt_enabled();
     data.server = Data.readStr(_MQTT_SERVER_ADDR, _MQTT_SERVER_SIZE);
     data.port = Data.read16(_MQTT_PORT_ADDR);
     data.username = Data.readStr(_MQTT_USERNAME_ADDR, _MQTT_USERNAME_SIZE);
@@ -264,7 +264,7 @@ config_mqtt_t config_mqtt_get()
 
 void config_mqtt_set(config_mqtt_t data)
 {
-    Data.write(_MQTT_ENABLED_ADDR, data.enabled);
+    Data.write(_MQTT_ENABLED_ADDR, data.enabled ? YES : NO);
     if (data.enabled)
     {
         Data.writeStr(_MQTT_SERVER_ADDR, data.server, true);
@@ -283,4 +283,9 @@ void config_activate(config_activation_t data)
     _config_access_set(data);
     Data.write(_ACTIVATED_ADDR, YES);
     Data.save();
+}
+
+bool config_mqtt_enabled()
+{
+    return Data.read(_MQTT_ENABLED_ADDR) == YES;
 }

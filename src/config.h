@@ -54,5 +54,6 @@ config_access_t config_access_get();
 void config_access_set(config_access_t data);
 config_mqtt_t config_mqtt_get();
 void config_mqtt_set(config_mqtt_t data);
+bool config_mqtt_enabled();
 
 #endif
