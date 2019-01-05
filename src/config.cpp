@@ -265,10 +265,14 @@ config_mqtt_t config_mqtt_get()
 void config_mqtt_set(config_mqtt_t data)
 {
     Data.write(_MQTT_ENABLED_ADDR, data.enabled);
-    Data.writeStr(_MQTT_SERVER_ADDR, data.server, data.enabled);
-    Data.write16(_MQTT_PORT_ADDR, data.port);
-    Data.writeStr(_MQTT_PASSWORD_ADDR, data.password);
-    Data.writeStr(_MQTT_TOPIC_ADDR, data.topic, data.enabled);
+    if (data.enabled)
+    {
+        Data.writeStr(_MQTT_SERVER_ADDR, data.server, true);
+        Data.write16(_MQTT_PORT_ADDR, data.port);
+        Data.writeStr(_MQTT_USERNAME_ADDR, data.username);
+        Data.writeStr(_MQTT_PASSWORD_ADDR, data.password);
+        Data.writeStr(_MQTT_TOPIC_ADDR, data.topic, true);
+    }
     Data.save();
 }
 
