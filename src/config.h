@@ -9,6 +9,7 @@
 
 struct config_network_t
 {
+    String name;
     String wifi_ssid;
     String wifi_password;
     bool dhcp;
@@ -20,18 +21,23 @@ struct config_network_t
     IPAddress dns2;
 };
 
-struct config_details_t
-{
-    String name;
-};
-
 struct config_access_t
 {
     String access;
 };
 
-struct config_activation_t : config_network_t, config_details_t, config_access_t
+struct config_activation_t : config_network_t, config_access_t
 {
+};
+
+struct config_mqtt_t
+{
+    bool enabled;
+    String server;
+    int16_t port;
+    String username;
+    String password;
+    String topic;
 };
 
 void config_init();
@@ -39,7 +45,14 @@ bool config_activated();
 void config_activate(config_activation_t data);
 void config_deactivate();
 void config_deactivate_await();
+String config_name_get();
 config_activation_t config_activation_get();
 config_activation_t config_activation_log();
+config_network_t config_network_get();
+void config_network_set(config_network_t data);
+config_access_t config_access_get();
+void config_access_set(config_access_t data);
+config_mqtt_t config_mqtt_get();
+void config_mqtt_set(config_mqtt_t data);
 
 #endif

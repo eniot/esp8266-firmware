@@ -1,8 +1,14 @@
 #include "Data.h"
 #include <EEPROM.h>
 
-void DataClass::write(int addr, String value)
+void DataClass::writeStr(int addr, String value, bool emptyCheck)
 {
+    if (emptyCheck)
+    {
+        value.trim();
+        if (value == "")
+            return;
+    }
     int curAddr = addr;
     for (size_t i = 0; i < value.length(); i++)
     {
@@ -27,14 +33,27 @@ String DataClass::readStr(int addr, size_t maxlen)
     return value;
 }
 
-void DataClass::write(int addr, int value)
+void DataClass::write(int addr, int8_t value)
 {
     EEPROM.write(addr, value);
 }
 
-int DataClass::read(int addr)
+int8_t DataClass::read(int addr)
 {
     return EEPROM.read(addr);
+}
+
+void DataClass::write16(int addr, int16_t value)
+{
+    EEPROM.write(addr, value >> 8);
+    EEPROM.write(addr + 1, value);
+}
+
+int16_t DataClass::read16(int addr)
+{
+    int16_t val = EEPROM.read(addr);
+    val = val << 8 | EEPROM.read(addr + 1);
+    return val;
 }
 
 void DataClass::init(size_t size)

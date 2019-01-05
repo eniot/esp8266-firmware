@@ -6,6 +6,70 @@ String html_meta(String content)
     return "<meta " + content + ">";
 }
 
+String html_script()
+{
+    return R"====(
+<script> 
+    const dnsRadios = document.getElementsByName('dns');
+    const dhcpRadios = document.getElementsByName('dhcp');
+    const mqttRadios = document.getElementsByName('mqtt');
+    function mqttChange(value)
+    {
+        const inputs = document.getElementsByClassName('mqtt-input');
+        for (var j = 0; j < inputs.length; j++)
+        {
+            inputs[j].disabled = value === '0';
+        }
+        document.getElementById('mqtt-section').style.display = value === '0' ? 'none' : 'block';
+    }    
+    function dnsChange(value)
+    {
+        const inputs = document.getElementsByClassName('dns-input');
+        for (var j = 0; j < inputs.length; j++)
+        {
+            inputs[j].disabled = value === '0';
+        }
+        document.getElementById('dns-section').style.display = value === '0' ? 'none' : 'block';
+    }
+    function dhcpChange(value)
+    {
+        const inputs = document.getElementsByClassName('dchp-input');
+        for (var j = 0; j < inputs.length; j++)
+        {
+            inputs[j].disabled = value === '1';
+        }
+        if (value === '0')
+        {
+            for (var j = 0, length = dnsRadios.length; j < length; j++)
+            {
+                dnsRadios[j].checked = dnsRadios[j].value === '1';
+            }
+            dnsChange("1");
+        }
+        document.getElementById('dhcp-section').style.display = value === '1' ? 'none' : 'block';
+    }
+    for (var i = 0, length = dnsRadios.length; i < length; i++)
+    {
+        dnsRadios[i].addEventListener('change', function() {
+            dnsChange(this.value);
+        });
+    }
+    for (var i = 0, length = dhcpRadios.length; i < length; i++)
+    {
+        dhcpRadios[i].addEventListener('change', function() {
+            dhcpChange(this.value);
+        });
+    }
+    for (var i = 0, length = mqttRadios.length; i < length; i++)
+    {
+        mqttRadios[i].addEventListener('change', function() {
+            mqttChange(this.value);
+        });
+    }
+</script>
+           )====";
+}
+
 String html_head(String title)
 {
     return "<head>" +
@@ -25,7 +89,7 @@ String html_head(String title)
         margin: 5px;
         flex-flow: column;
     }
-    button, label, .radios, input[type="text"],  input[type="password"] {
+    button, label, .radios, input[type="text"],  input[type="password"], input[type="number"] {
         padding: 10px;
         font-size: 14px;
         width: 100%;
@@ -45,7 +109,8 @@ String html_head(String title)
         list-style: none;
         padding: 0px;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
+        margin-bottom: 30px;
     }
     .menu li {
         display: inline-block;
@@ -55,19 +120,15 @@ String html_head(String title)
         text-decoration: none;
         color: #0078e7;
     }
-    .menu li a:hover {
+    .menu li a:hover, .menu li.active a {
         text-decoration: none;
         border-bottom: 1px solid #0078e7;
-    }
-    .menu li.active a {
-        font-weight: 600;
-        border-bottom: 2px solid #0078e7;
     }
     @media only screen and (min-width: 600px) {
         .row {
             flex-flow: row;
         }
-        button, label, input[type="text"],  input[type="password"], .radios {
+        button, label, input[type="text"],  input[type="password"], input[type="number"], .radios {
             width: 50%;
         }
     }

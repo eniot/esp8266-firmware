@@ -5,6 +5,7 @@
 #include "activation.h"
 #include "config.h"
 #include "logger.h"
+#include "portal.h"
 #include "views/activation_index.h"
 
 const byte DNS_PORT = 53;
@@ -19,7 +20,8 @@ void activation_setup()
 {
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-    WiFi.softAP("InactiveIOT");
+    String ssid = "(inactive) " + config_name_get();
+    WiFi.softAP(ssid.c_str());
 
     // if DNSServer is started with "*" for domain name, it will reply with
     // provided IP to all DNS request
@@ -51,23 +53,8 @@ void _activation_save_handler()
 {
     LOG_TRACE("_activation_save_handler");
     config_activation_t data;
-    data.name = captiveWebServer.arg("name");
-    data.access = captiveWebServer.arg("access");
-    data.wifi_ssid = captiveWebServer.arg("wifi_ssid");
-    data.wifi_password = captiveWebServer.arg("wifi_password");
-    data.dhcp = captiveWebServer.arg("dhcp") == "1";
-    if (!data.dhcp)
-    {
-        data.ip.fromString(captiveWebServer.arg("ip"));
-        data.subnet.fromString(captiveWebServer.arg("subnet"));
-        data.gateway.fromString(captiveWebServer.arg("gateway"));
-    }
-    data.dns = captiveWebServer.arg("dns") == "1";
-    if (data.dns)
-    {
-        data.dns1.fromString(captiveWebServer.arg("dns1"));
-        data.dns2.fromString(captiveWebServer.arg("dns2"));
-    }
+    update_access_from_web(&captiveWebServer, &data);
+    update_network_from_web(&captiveWebServer, &data);
     config_activate(data);
     LOG_INFO("Device Activated. Restarting...")
     ESP.restart();

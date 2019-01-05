@@ -9,6 +9,7 @@ String html_head(String title);
 String html_field(String type, String name, String label, String value = "", String className = "", bool required = true);
 String html_radios(String name, String label, String values[], String displays[], size_t valCount, String value = "");
 String html_button(String text, String type = "submit");
+String html_script();
 
 struct html_menu_t
 {
