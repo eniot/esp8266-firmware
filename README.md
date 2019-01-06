@@ -1,2 +1,8 @@
 # Iot.EspFirmware
-ESP-01 Firmware
+
+ESP8266 Firmware which supports
+
+- Web based configuration
+
+- MQTT based operation
+
