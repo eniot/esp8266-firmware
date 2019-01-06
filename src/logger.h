@@ -43,12 +43,7 @@ void logger_init();
 #define LOGF(type, message, args...)
 #endif
 
-#ifdef LOG_LEVEL_ALL
-#define LOG_ERROR(message) LOG("ERROR", message)
-#define LOG_INFO(message) LOG("INFO ", message)
-#define LOG_WARN(message) LOG("WARN ", message)
-#define LOG_TRACE(message) LOG("TRACE", message)
-#elif LOG_LEVEL_TRACE
+#ifdef LOG_LEVEL_TRACE
 #define LOG_ERROR(message) LOG("ERROR", message)
 #define LOG_INFO(message) LOG("INFO ", message)
 #define LOG_WARN(message) LOG("WARN ", message)

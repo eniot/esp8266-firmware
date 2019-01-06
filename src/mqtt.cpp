@@ -17,52 +17,52 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 void _callback(char *topic, byte *payload, unsigned int length);
-void _connect();
+bool _connect();
 void _ack();
 
 void mqtt_setup()
 {
     _mqtt_enabled = true;
     _mqtt_cfg = config_mqtt_get();
-    _mqtt_outTopic = ("res/" + _mqtt_cfg.topic).c_str();
-    _mqtt_inTopic = ("cmd/" + _mqtt_cfg.topic).c_str();
+    _mqtt_outTopic = ("res_" + _mqtt_cfg.topic).c_str();
+    _mqtt_inTopic = ("cmd_" + _mqtt_cfg.topic).c_str();
     _mqtt_clientId = config_name_get().c_str();
+    PRINTSTATUS("MQTT", _mqtt_cfg.server + " port " + _mqtt_cfg.port);
     client.setServer(_mqtt_cfg.server.c_str(), _mqtt_cfg.port);
     client.setCallback(_callback);
 }
 
 void mqtt_execute()
 {
-    if (!_mqtt_enabled)
+    if (!_mqtt_enabled || !_connect())
         return;
+
+    client.loop();
     _ack();
 }
 
 bool mqtt_send(String msg)
 {
-    _connect();
-    if (client.connected())
-        return client.publish(_mqtt_outTopic, msg.c_str());
-    return false;
+    return client.publish(_mqtt_outTopic, msg.c_str());
 }
 
-void _connect()
+bool _connect()
 {
-    if (!client.connected())
+    if (client.connected())
+        return true;
+
+    LOG_INFO("Attempting MQTT connection...");
+    if (client.connect(_mqtt_clientId))
     {
-        LOG_INFO("Attempting MQTT connection...");
-        if (client.connect(_mqtt_clientId))
-        {
-            LOG_INFO("MQTT connected");
-            client.subscribe(_mqtt_inTopic);
-            client.publish(_mqtt_outTopic, _MQTT_ACK);
-        }
-        else
-        {
-            LOG_ERROR("MQTT connection failed");
-            return;
-        }
+        LOG_INFO("MQTT connected");
+        client.subscribe(_mqtt_inTopic);
+        client.publish(_mqtt_outTopic, _MQTT_ACK);
+        return true;
     }
+    String msg = "MQTT connection failed - ";
+    msg += client.state();
+    LOG_ERROR(msg);
+    return false;
 }
 
 unsigned long _next_ack_time = 0;
@@ -83,6 +83,9 @@ void _ack()
 void _callback(char *topic, byte *payload, unsigned int length)
 {
     LOG_TRACE("MQTT Message arrived");
-    String payloadStr((char *)payload);
-    PRINTLN(payloadStr);
+    for (int i = 0; i < length; i++)
+    {
+        PRINT((char)payload[i]);
+    }
+    PRINTLN();
 }
