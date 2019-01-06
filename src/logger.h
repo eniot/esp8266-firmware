@@ -48,6 +48,11 @@ void logger_init();
 #define LOG_INFO(message) LOG("INFO ", message)
 #define LOG_WARN(message) LOG("WARN ", message)
 #define LOG_TRACE(message) LOG("TRACE", message)
+#elif LOG_LEVEL_TRACE
+#define LOG_ERROR(message) LOG("ERROR", message)
+#define LOG_INFO(message) LOG("INFO ", message)
+#define LOG_WARN(message) LOG("WARN ", message)
+#define LOG_TRACE(message) LOG("TRACE", message)
 #elif LOG_LEVEL_INFO
 #define LOG_ERROR(message) LOG("ERROR", message)
 #define LOG_WARN(message) LOG("WARN ", message)
