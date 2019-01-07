@@ -21,6 +21,9 @@ void _ack();
 
 void mqtt_setup()
 {
+    if (_mqttclient.connected())
+        _mqttclient.disconnect();
+
     _mqtt_enabled = true;
     _mqtt_cfg = config_mqtt_get();
     _mqtt_clientId = config_name_get();
