@@ -289,9 +289,9 @@ String _config_mqtt_topic_get()
     if (topic == "")
     {
         topic = config_name_get();
+        Data.writeStr(_MQTT_TOPIC_ADDR, topic);
+        Data.save();
     }
-    Data.writeStr(_MQTT_TOPIC_ADDR, topic);
-    Data.save();
     return topic;
 }
 
