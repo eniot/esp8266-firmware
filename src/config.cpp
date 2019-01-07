@@ -91,7 +91,7 @@ void config_init()
 {
     Data.init(EEPROM_SIZE);
     uint8_t _actraw = Data.read(_ACTIVATED_ADDR);
-    if(_actraw != YES || _actraw != NO) 
+    if(_actraw != YES && _actraw != NO) 
     {
         //Initial execution - Setup default values
         config_network_t ndata;
@@ -119,6 +119,8 @@ void config_init()
         mdata.username = "";
         mdata.password = "";
         _config_mqtt_set(mdata);
+        Data.write(_ACTIVATED_ADDR, NO);
+        Data.save();
     }
 }
 
