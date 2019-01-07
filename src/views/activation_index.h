@@ -38,6 +38,7 @@ String view_activation_index(config_activation_t data)
            view_activation_index_content(data, "Activate") +
            "</div>" +
            html_script() +
+           "<script>dnsChange('" + (data.dns ? "1" : "0") + "');dhcpChange('" + (data.dhcp ? "1" : "0") + "');</script>" +
            "</body></html>";
 }
 
