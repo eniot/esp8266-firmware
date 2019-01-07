@@ -6,6 +6,7 @@
 void network_setup()
 {
     config_activation_t cfg_act = config_activation_log();
+    Network.disconnect();
     Network.init(WIFI_STA, cfg_act.name);
     Network.config(cfg_act.dhcp, cfg_act.ip, cfg_act.subnet, cfg_act.gateway, cfg_act.dns, cfg_act.dns1, cfg_act.dns2);
     LOG_INFO("Connecting to network...");

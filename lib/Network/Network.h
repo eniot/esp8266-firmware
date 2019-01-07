@@ -30,6 +30,7 @@ class NetworkClass
     {
         return connect(ssid, password, 10000);
     }
+    bool disconnect(bool wifioff = false);
     connection_info_t info();
 };
 

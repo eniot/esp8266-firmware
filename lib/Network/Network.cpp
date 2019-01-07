@@ -35,6 +35,15 @@ bool NetworkClass::connect(String ssid, String password, unsigned long timeout)
     return _awaitConnect(timeout);
 }
 
+bool NetworkClass::disconnect(bool wifioff)
+{
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        return WiFi.disconnect(wifioff);
+    }
+    return true;
+}
+
 bool NetworkClass::reconnect(String ssid, String password, uint8_t channel, uint8_t bssid[6], unsigned long timeout)
 {
     if (WiFi.status() == WL_CONNECTED)

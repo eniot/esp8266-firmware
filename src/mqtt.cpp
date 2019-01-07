@@ -31,36 +31,31 @@ void mqtt_setup()
     _mqttclient.setCallback(_callback);
 }
 
-void reconnect()
-{    
-    while (!_mqttclient.connected())
+bool _tryconnect()
+{
+    if (_mqttclient.connected())
+        return true;
+
+    LOG_INFO("Attempting MQTT connection...");
+    if (!_mqttclient.connect(_mqtt_clientId.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
     {
-        LOG_INFO("Attempting MQTT connection...");        
-        if (_mqttclient.connect(_mqtt_clientId.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
-        {
-            LOG_INFO("MQTT Connected");       
-            PRINTSTATUS("Topic IN", _mqtt_inTopic);
-            PRINTSTATUS("Topic OUT", _mqtt_outTopic);            
-            _mqttclient.publish(_mqtt_outTopic.c_str(), _MQTT_ACK);            
-            _mqttclient.subscribe(_mqtt_inTopic.c_str());
-        }
-        else
-        {
-            LOG_ERROR("MQTT connection Failed, rc: " + _mqttclient.state());
-        }
+        LOG_ERROR("MQTT connection Failed, rc: " + _mqttclient.state());
+        return false;
     }
+    LOG_INFO("MQTT Connected");
+    PRINTSTATUS("Topic IN", _mqtt_inTopic);
+    PRINTSTATUS("Topic OUT", _mqtt_outTopic);
+    _mqttclient.publish(_mqtt_outTopic.c_str(), _MQTT_ACK);
+    _mqttclient.subscribe(_mqtt_inTopic.c_str());
+    return true;
 }
 
 void mqtt_execute()
 {
-    if (!_mqtt_enabled)
+    if (!_mqtt_enabled || !_tryconnect())
         return;
 
-    if (!_mqttclient.connected())    
-        reconnect();
-
     _mqttclient.loop();
-    _ack();
 }
 
 bool mqtt_send(const char *payload)
@@ -68,27 +63,11 @@ bool mqtt_send(const char *payload)
     return _mqttclient.publish(_mqtt_outTopic.c_str(), payload);
 }
 
-unsigned long _next_ack_time = 0;
-void _ack()
-{
-    unsigned long currTime = millis();
-    if (currTime >= _next_ack_time)
-    {
-        LOG_TRACE("MQTT Sending ACK...");
-        _next_ack_time = currTime + _MQTT_ACK_INTERVAL;
-        if (!mqtt_send(_MQTT_ACK))
-        {
-            LOG_ERROR("MQTT ACK Failed");
-        }
-    }
-}
-
-void _callback(char *topic, byte *payload, unsigned int length)
+void _callback(char *topic, byte *payload, size_t length)
 {
     LOG_TRACE("MQTT Message arrived");
-    for (unsigned int i = 0; i < length; i++)
-    {
-        PRINT((char)payload[i]);
-    }
-    PRINTLN();
+    payload[length] = '\0';
+    String topicStr(topic);
+    String msgStr((char *)payload);
+    PRINTSTATUS(topicStr, msgStr);
 }

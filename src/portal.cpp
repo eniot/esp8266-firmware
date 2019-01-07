@@ -7,6 +7,8 @@
 #include "views/portal_mqtt.h"
 #include "logger.h"
 #include "config.h"
+#include "mqtt.h"
+#include "network.h"
 
 ESP8266WebServer portalWebServer(80);
 
@@ -23,6 +25,7 @@ void portal_setup()
         update_network_from_web(&portalWebServer, &data);
         config_network_set(data);
         portalWebServer.send(200, "text/html", view_portal_network(config_network_get()));
+        network_setup();
     });
     portalWebServer.on("/access", HTTP_GET, [] {
         portalWebServer.send(200, "text/html", view_portal_access(config_access_get()));
@@ -52,6 +55,7 @@ void portal_setup()
         }
         config_mqtt_set(data);
         portalWebServer.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
+        mqtt_setup();
     });
     portalWebServer.onNotFound([]() {
         portalWebServer.send(404, "text/html", "<code>request not found</code>");
