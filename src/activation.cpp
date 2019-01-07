@@ -20,6 +20,7 @@ bool _activated = true;
 
 void activation_setup()
 {
+    LOG_INFO("Executing activating sequence.");
     _activated = false;
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
