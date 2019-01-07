@@ -82,9 +82,44 @@
 // Public constants
 #define EEPROM_SIZE (_END_ADDR + 1)
 
+String _config_name_gen();
+void _config_network_set(config_network_t data);
+void _config_access_set(config_access_t data);
+void _config_mqtt_set(config_mqtt_t data);
+
 void config_init()
 {
     Data.init(EEPROM_SIZE);
+    uint8_t _actraw = Data.read(_ACTIVATED_ADDR);
+    if(_actraw != YES || _actraw != NO) 
+    {
+        //Initial execution - Setup default values
+        config_network_t ndata;
+        ndata.dhcp = true;
+        ndata.dns = false;
+        ndata.name = _config_name_gen();
+        ndata.wifi_ssid = "";
+        ndata.wifi_password = "";
+        ndata.ip.fromString("0.0.0.0");
+        ndata.gateway.fromString("0.0.0.0");
+        ndata.subnet.fromString("0.0.0.0");
+        ndata.dns1.fromString("0.0.0.0");
+        ndata.dns2.fromString("0.0.0.0");
+        _config_network_set(ndata);
+
+        config_access_t adata;
+        adata.access = "";
+        _config_access_set(adata);
+
+        config_mqtt_t mdata;
+        mdata.enabled = false;
+        mdata.server = "mqtt.local";
+        mdata.port = 1883;
+        mdata.topic = ndata.name;
+        mdata.username = "";
+        mdata.password = "";
+        _config_mqtt_set(mdata);
+    }
 }
 
 bool config_activated()
@@ -155,17 +190,25 @@ config_activation_t config_activation_log()
     }
     return data;
 }
+
+String _config_name_gen() 
+{
+    String name;
+    for (size_t i = 0; i < 4; i++)
+    {
+        name += char('a' + random(26));
+    }
+    name += "-iot";
+    return name;
+}
+
 String config_name_get()
 {
     String name = Data.readStr(_NAME_ADDR, _NAME_SIZE);
     name.trim();
     if (name == "")
     {
-        for (size_t i = 0; i < 4; i++)
-        {
-            name += char('a' + random(26));
-        }
-        name += "-iot";
+        name = _config_name_gen();
         Data.writeStr(_NAME_ADDR, name);
         Data.save();
     }
@@ -262,7 +305,7 @@ config_mqtt_t config_mqtt_get()
     return data;
 }
 
-void config_mqtt_set(config_mqtt_t data)
+void _config_mqtt_set(config_mqtt_t data) 
 {
     Data.write(_MQTT_ENABLED_ADDR, data.enabled ? YES : NO);
     if (data.enabled)
@@ -273,6 +316,11 @@ void config_mqtt_set(config_mqtt_t data)
         Data.writeStr(_MQTT_PASSWORD_ADDR, data.password);
         Data.writeStr(_MQTT_TOPIC_ADDR, data.topic, true);
     }
+}
+
+void config_mqtt_set(config_mqtt_t data)
+{
+    _config_mqtt_set(data);
     Data.save();
 }
 
