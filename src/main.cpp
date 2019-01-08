@@ -10,9 +10,7 @@ void setup()
 {
     logger_init();
     config_init();
-
     config_deactivate_await();
-
     if (!config_activated())
     {
         activation_setup();

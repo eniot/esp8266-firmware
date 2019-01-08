@@ -23,7 +23,7 @@ void portal_setup()
     portalWebServer.on("/network", HTTP_POST, [] {
         config_network_t data;
         update_network_from_web(&portalWebServer, &data);
-        config_network_set(data);
+        config_network_save(data);
         portalWebServer.send(200, "text/html", view_portal_network(config_network_get()));
         network_setup();
     });
@@ -33,11 +33,11 @@ void portal_setup()
     portalWebServer.on("/access", HTTP_POST, [] {
         config_access_t data;
         update_access_from_web(&portalWebServer, &data);
-        config_access_set(data);
+        config_access_save(data);
         portalWebServer.send(200, "text/html", view_portal_access(config_access_get()));
     });
     portalWebServer.on("/io", HTTP_GET, [] {
-        portalWebServer.send(200, "text/html", view_portal_io());
+        portalWebServer.send(200, "text/html", view_portal_io(config_io_get()));
     });
     portalWebServer.on("/mqtt", HTTP_GET, [] {
         portalWebServer.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
@@ -53,7 +53,7 @@ void portal_setup()
             data.username = portalWebServer.arg("username");
             data.password = portalWebServer.arg("password");
         }
-        config_mqtt_set(data);
+        config_mqtt_save(data);
         portalWebServer.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
         mqtt_setup();
     });

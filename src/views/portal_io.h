@@ -7,16 +7,36 @@
 #include "config.h"
 #include "menu.h"
 
-String view_portal_io()
+String _io_func_values[3] = { String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT) };
+String _io_func_displays[3] = { "Unused", "Input", "Output" };
+
+String _io_field(unsigned int ioIndex, config_gpio_t data) 
 {
-    return "<html lang=\"en\">" +
-           html_head("IOT Portal") +
-           "<body>" +
-           "<div class='container'>" +
-           html_menu(menu_list, menu_size, "IO") +
-           "</div>" +
-           "</body>" +
-           "</html>";
+    char namefunc[10];
+    sprintf(namefunc, "%d_function", ioIndex);
+    char labelfunc[10];
+    sprintf(labelfunc, "GPIO%02d", ioIndex);     
+    char namelbl[10];
+    sprintf(namelbl, "%d_label", ioIndex);
+    char labellbl[20];
+    sprintf(labellbl, "GPIO%02d Label", ioIndex);            
+    return html_radios(namefunc, labelfunc, _io_func_values, _io_func_displays, 3, String(data.function)) + 
+        html_field("text", namelbl, labellbl, data.label);
+}
+
+String view_portal_io(config_io_t data)
+{
+    String content = "<html lang=\"en\">" +
+        html_head("IOT Portal - IO") +
+        "<body><div class='container'><form method='POST'>" +
+        html_menu(menu_list, menu_size, "IO");
+    
+    for(size_t i = 0; i < _IO_COUNT; i++)
+    {
+        content += _io_field(i, data.gpio[i]);
+    }
+    content += "</form></div></body></html>";
+    return content;
 }
 
 #endif
