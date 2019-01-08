@@ -8,7 +8,7 @@
 #include "logger.h"
 #include "config.h"
 #include "mqtt.h"
-#include "network.h"
+#include "net.h"
 
 ESP8266WebServer portalWebServer(80);
 
