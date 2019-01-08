@@ -39,6 +39,16 @@ void portal_setup()
     portalWebServer.on("/io", HTTP_GET, [] {
         portalWebServer.send(200, "text/html", view_portal_io(config_io_get()));
     });
+    portalWebServer.on("/io", HTTP_POST, [] {
+        config_io_t data;
+        for(size_t i = 0; i < _IO_COUNT; i++)
+        {
+            data.gpio[i].label = portalWebServer.arg(String(i) + "_label");
+            data.gpio[i].function = portalWebServer.arg(String(i) + "_function").toInt();
+        }
+        config_io_save(data);
+        portalWebServer.send(200, "text/html", view_portal_io(config_io_get()));
+    });
     portalWebServer.on("/mqtt", HTTP_GET, [] {
         portalWebServer.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
     });

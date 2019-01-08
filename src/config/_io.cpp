@@ -9,7 +9,7 @@ void config_io_set(config_io_t data)
     for(size_t i = 0; i < _IO_COUNT; i++)
     {        
         Data.write(addr, data.gpio[i].function);
-        addr += _IO_LABEL_SIZE;
+        addr += _IO_FUNC_SIZE;
         Data.writeStr(addr, data.gpio[i].label);
         addr += _IO_LABEL_SIZE;
     }    
@@ -28,7 +28,7 @@ config_io_t config_io_get()
     for(size_t i = 0; i < _IO_COUNT; i++)
     {        
         data.gpio[i].function = Data.read(addr);
-        addr += _IO_LABEL_SIZE;
+        addr += _IO_FUNC_SIZE;
         data.gpio[i].label = Data.readStr(addr, _IO_LABEL_SIZE);
         addr += _IO_LABEL_SIZE;
     }

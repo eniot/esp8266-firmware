@@ -33,6 +33,7 @@ String view_portal_io(config_io_t data)
     {
         content += "<br/>" + _io_field(i, data.gpio[i]);
     }
+    content += html_button("Save");
     content += "</form></div></body></html>";
     return content;
 }
