@@ -4,6 +4,8 @@
 #define NO 1
 #define YES 2
 
+#define UNUSED 0xFF
+
 #include <Arduino.h>
 #include <IPAddress.h>
 
@@ -40,6 +42,17 @@ struct config_mqtt_t
     String topic;
 };
 
+struct config_gpio_t
+{
+    int8_t function;
+    String label;
+};
+
+struct config_io_t
+{
+    config_gpio_t gpio[17];
+};
+
 void config_init();
 bool config_activated();
 void config_activate(config_activation_t data);
@@ -55,5 +68,7 @@ void config_access_set(config_access_t data);
 config_mqtt_t config_mqtt_get();
 void config_mqtt_set(config_mqtt_t data);
 bool config_mqtt_enabled();
+config_io_t config_io_get();
+void config_io_set(config_io_t data);
 
 #endif

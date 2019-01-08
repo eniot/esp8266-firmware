@@ -76,8 +76,15 @@
 #define _MQTT_TOPIC_ADDR (_MQTT_PASSWORD_ADDR + _MQTT_PASSWORD_SIZE)
 #define _MQTT_TOPIC_SIZE 32
 
+// IO
+#define _IO_ADDR (_MQTT_TOPIC_ADDR + _MQTT_TOPIC_SIZE)
+#define _IO_FUNC_SIZE 1
+#define _IO_LABEL_SIZE 16
+#define _IO_COUNT 17
+#define _IO_SIZE ((_IO_LABEL_SIZE + _IO_FUNC_SIZE) * _IO_COUNT)
+
 // END EEPROM
-#define _END_ADDR (_MQTT_TOPIC_ADDR + _MQTT_TOPIC_SIZE)
+#define _END_ADDR (_IO_ADDR + _IO_SIZE)
 
 // Public constants
 #define EEPROM_SIZE (_END_ADDR + 1)
@@ -86,6 +93,7 @@ String _config_name_gen();
 void _config_network_set(config_network_t data);
 void _config_access_set(config_access_t data);
 void _config_mqtt_set(config_mqtt_t data);
+void _config_io_set(config_io_t data);
 
 void config_init()
 {
@@ -120,6 +128,15 @@ void config_init()
         mdata.password = "";
         _config_mqtt_set(mdata);
         Data.write(_ACTIVATED_ADDR, NO);
+
+        config_io_t odata;
+        for(size_t i = 0; i < _IO_COUNT; i++)
+        {
+            odata.gpio[i].function = UNUSED;
+            odata.gpio[i].label = "";
+        }
+        _config_io_set(odata);
+
         Data.save();
     }
 }
@@ -338,4 +355,36 @@ void config_activate(config_activation_t data)
 bool config_mqtt_enabled()
 {
     return Data.read(_MQTT_ENABLED_ADDR) == YES;
+}
+
+void _config_io_set(config_io_t data)
+{    
+    unsigned int addr = _IO_ADDR;
+    for(size_t i = 0; i < _IO_COUNT; i++)
+    {        
+        Data.write(addr, data.gpio[i].function);
+        addr += _IO_LABEL_SIZE;
+        Data.writeStr(addr, data.gpio[i].label);
+        addr += _IO_LABEL_SIZE;
+    }    
+}
+
+void config_io_set(config_io_t data) 
+{
+    _config_io_set(data);
+    Data.save();
+}
+
+config_io_t config_io_get()
+{
+    config_io_t data;
+    unsigned int addr = _IO_ADDR;
+    for(size_t i = 0; i < _IO_COUNT; i++)
+    {        
+        data.gpio[i].function = Data.read(addr);
+        addr += _IO_LABEL_SIZE;
+        data.gpio[i].label = Data.readStr(addr, _IO_LABEL_SIZE);
+        addr += _IO_LABEL_SIZE;
+    }
+    return data;
 }
