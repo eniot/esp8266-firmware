@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-struct command_t
+struct cmd_t
 {
     String topic_cmd;
     String topic_name;
@@ -13,12 +13,13 @@ struct command_t
     String command;
 };
 
-struct command_response_t
+struct cmd_resp_t
 {
     bool success;
-    String messgage;
+    String msg;
+    String domain;
 };
 
-bool cmd_execute(command_t cmd);
+cmd_resp_t cmd_execute(cmd_t cmd);
 
 #endif

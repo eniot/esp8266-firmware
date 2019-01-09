@@ -61,14 +61,19 @@ void mqtt_execute()
     _mqttclient.loop();
 }
 
-bool mqtt_send(const char *payload)
+bool mqtt_send(String payload, String domain)
 {
-    return _mqttclient.publish(_mqtt_outTopic.c_str(), payload);
+    if (domain == "")
+    {
+        _mqtt_outTopic += "/";
+        _mqtt_outTopic += domain;
+    }
+    return _mqttclient.publish(_mqtt_outTopic.c_str(), payload.c_str());
 }
 
-command_t _mqtt_parse_command(const char *topic, byte *payload)
+cmd_t _mqtt_parse_cmd(const char *topic, byte *payload)
 {
-    command_t cmd;
+    cmd_t cmd;
     char tmp[4][32];
     size_t count = sscanf(topic, "%[^'/']/%[^'/']/%[^'/']/%s", tmp[0], tmp[1], tmp[2], tmp[3]);
     if (count >= 4)
@@ -91,7 +96,7 @@ void _callback(char *topic, byte *payload, size_t length)
 {
     LOG_TRACE("MQTT Message arrived");
     payload[length] = '\0';
-    command_t cmd = _mqtt_parse_command(topic, payload);
+    cmd_t cmd = _mqtt_parse_cmd(topic, payload);
     PRINTSTATUS("Topic CMD", cmd.topic_cmd);
     PRINTSTATUS("Topic Name", cmd.topic_name);
     PRINTSTATUS("Domain Type", cmd.domain_type);

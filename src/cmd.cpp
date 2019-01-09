@@ -2,35 +2,68 @@
 #include "mqtt.h"
 #include "config.h"
 
-bool _cmd_execute_io(command_t cmd);
-bool _cmd_execute_mqtt(command_t cmd);
+cmd_resp_t _cmd_execute_io(cmd_t cmd);
+cmd_resp_t _cmd_execute_mqtt(cmd_t cmd);
 
-bool cmd_execute(command_t cmd)
+cmd_resp_t _ok(String msg = "", String domain = "")
+{
+    cmd_resp_t resp;
+    resp.success = true;
+    resp.msg = msg;
+    resp.domain = domain;
+    return resp;
+}
+
+cmd_resp_t _err(String msg = "", String domain = "")
+{
+    cmd_resp_t resp;
+    resp.success = false;
+    resp.msg = msg;
+    resp.domain = domain;
+    return resp;
+}
+
+cmd_resp_t cmd_execute(cmd_t cmd)
 {
     if (cmd.domain_type.equalsIgnoreCase("io"))
         return _cmd_execute_io(cmd);
     if (cmd.domain_type.equalsIgnoreCase("mqtt"))
         return _cmd_execute_mqtt(cmd);
-    return false;
+    return _err("invalid_domain_type");
 }
 
-bool _cmd_execute_io(command_t cmd)
+cmd_resp_t _cmd_execute_io(cmd_t cmd)
 {
+    unsigned int gpioindex = config_gpio_index(cmd.domain);
+    if (gpioindex < 0)
+        return _err("io_notfound");
+
+    config_gpio_t gpio = config_gpio_get(gpioindex);
+    if (gpio.function == IO_UNUSED)
+        return _err("io_unused");
+
+    String _domain = cmd.domain_type + "/" + cmd.domain;
+
     if (cmd.command.equalsIgnoreCase("get"))
     {
-        unsigned int gpioindex = config_gpio_index(cmd.domain);
-        if (gpioindex < 0)
-            return false;
-        config_gpio_t gpio = config_gpio_get(gpioindex);
-        }
-    return false;
+        return _ok(String(digitalRead(gpioindex)), _domain);
+    }
+    else if (cmd.command.equalsIgnoreCase("set"))
+    {
+        if (gpio.function != IO_OUTPUT)
+            return _err("io_readonly");
+
+        digitalWrite(gpioindex, cmd.params.equalsIgnoreCase("1") ? HIGH : LOW);
+        return _ok(cmd.params, _domain);
+    }
+    return _err("invalid_io_command");
 }
 
-bool _cmd_execute_mqtt(command_t cmd)
+cmd_resp_t _cmd_execute_mqtt(cmd_t cmd)
 {
     if (cmd.domain.equals("") && cmd.command.equalsIgnoreCase("ack"))
     {
-        return mqtt_send(MQTT_ACK);
+        return _ok(MQTT_ACK);
     }
-    return false;
+    return _err("invalid_mqtt_command");
 }
