@@ -3,11 +3,11 @@
 
 #include "config/_addr.h"
 #include "config/_constants.h"
-#include "config/_activation.h"
-#include "config/_network.h"
-#include "config/_access.h"
-#include "config/_mqtt.h"
-#include "config/_io.h"
+#include "config/activation.h"
+#include "config/network.h"
+#include "config/access.h"
+#include "config/mqtt.h"
+#include "config/io.h"
 
 void config_init();
 

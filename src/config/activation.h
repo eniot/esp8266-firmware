@@ -1,8 +1,8 @@
 #ifndef app_config_activation_h
 #define app_config_activation_h
 
-#include "config/_access.h"
-#include "config/_network.h"
+#include "config/access.h"
+#include "config/network.h"
 
 struct config_activation_t : config_network_t, config_access_t
 {

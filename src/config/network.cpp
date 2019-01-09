@@ -1,6 +1,6 @@
 #include <Data.h>
 #include "config/_addr.h"
-#include "config/_network.h"
+#include "config/network.h"
 #include "config/_constants.h"
 
 config_network_t config_network_get()
