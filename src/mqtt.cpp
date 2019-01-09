@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include "config.h"
 #include "logger.h"
-#include "command/mqtt.h"
+#include "cmd.h"
 
 bool _mqtt_enabled = false;
 config_mqtt_t _mqtt_cfg;
@@ -15,13 +15,12 @@ WiFiClient _wificlient;
 PubSubClient _mqttclient(_wificlient);
 
 void _callback(char *topic, byte *payload, unsigned int length);
-void _ack();
 
 void mqtt_setup()
-{    
-    if(!config_mqtt_enabled())
+{
+    if (!config_mqtt_enabled())
         return;
-        
+
     if (_mqttclient.connected())
         _mqttclient.disconnect();
 
@@ -49,7 +48,7 @@ bool _tryconnect()
     LOG_INFO("MQTT Connected");
     PRINTSTATUS("Topic IN", _mqtt_inTopic);
     PRINTSTATUS("Topic OUT", _mqtt_outTopic);
-    command_mqtt_ack();
+    mqtt_send(MQTT_ACK);
     _mqttclient.subscribe(_mqtt_inTopic.c_str());
     return true;
 }
@@ -67,18 +66,24 @@ bool mqtt_send(const char *payload)
     return _mqttclient.publish(_mqtt_outTopic.c_str(), payload);
 }
 
-mqtt_command_t _mqtt_parse_command(const char* topic, byte* payload)
+command_t _mqtt_parse_command(const char *topic, byte *payload)
 {
-    mqtt_command_t cmd;
+    command_t cmd;
     char tmp[4][32];
-    size_t count = sscanf(topic, "%[^'/']/%[^'/']/%[^'/']/%s", tmp[0], tmp[1], tmp[2], tmp[3]);    
-    if (count >= 4) cmd.domain = tmp[3];
-    if (count >= 3) cmd.domain_type = tmp[2];
-    if (count >= 2) cmd.topic_name = tmp[1];
-    if (count >= 1) cmd.topic_cmd = tmp[0];
-    count = sscanf((char*)payload, "%[^':']:%s", tmp[0], tmp[1]);
-    if (count >= 2) cmd.params = tmp[1];
-    if (count >= 1) cmd.command = tmp[0];
+    size_t count = sscanf(topic, "%[^'/']/%[^'/']/%[^'/']/%s", tmp[0], tmp[1], tmp[2], tmp[3]);
+    if (count >= 4)
+        cmd.domain = tmp[3];
+    if (count >= 3)
+        cmd.domain_type = tmp[2];
+    if (count >= 2)
+        cmd.topic_name = tmp[1];
+    if (count >= 1)
+        cmd.topic_cmd = tmp[0];
+    count = sscanf((char *)payload, "%[^':']:%s", tmp[0], tmp[1]);
+    if (count >= 2)
+        cmd.params = tmp[1];
+    if (count >= 1)
+        cmd.command = tmp[0];
     return cmd;
 }
 
@@ -86,11 +91,12 @@ void _callback(char *topic, byte *payload, size_t length)
 {
     LOG_TRACE("MQTT Message arrived");
     payload[length] = '\0';
-    mqtt_command_t cmd = _mqtt_parse_command(topic, payload);
+    command_t cmd = _mqtt_parse_command(topic, payload);
     PRINTSTATUS("Topic CMD", cmd.topic_cmd);
     PRINTSTATUS("Topic Name", cmd.topic_name);
     PRINTSTATUS("Domain Type", cmd.domain_type);
     PRINTSTATUS("Domain", cmd.domain);
     PRINTSTATUS("Command", cmd.command);
     PRINTSTATUS("Params", cmd.params);
+    cmd_execute(cmd);
 }
