@@ -20,7 +20,10 @@ void _callback(char *topic, byte *payload, unsigned int length);
 void _ack();
 
 void mqtt_setup()
-{
+{    
+    if(!config_mqtt_enabled())
+        return;
+        
     if (_mqttclient.connected())
         _mqttclient.disconnect();
 

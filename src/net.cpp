@@ -3,7 +3,7 @@
 #include "config.h"
 #include "logger.h"
 
-void network_setup()
+void _network_sta() 
 {
     config_activation_t cfg_act = config_activation_log();
     Network.disconnect();
@@ -22,3 +22,19 @@ void network_setup()
     PRINTSTATUS("GW", cinfo.gateway.toString());
     PRINTSTATUS("DNS", cinfo.dns.toString());
 }
+
+void _network_ap() 
+{
+    String name = config_name_get();
+    IPAddress apIP(192, 168, 1, 1);
+    Network.init(WIFI_AP, name);
+    Network.config(apIP, apIP, IPAddress(255, 255, 255, 0));
+    String ssid = "(inactive) " + name;
+    Network.connect(ssid.c_str());
+}
+
+void network_setup()
+{
+    return config_activated() ? _network_sta() : _network_ap();
+}
+

@@ -25,14 +25,29 @@ void NetworkClass::config(bool dhcp, IPAddress ip, IPAddress subnet, IPAddress g
     }
 }
 
+void NetworkClass::config(IPAddress ip, IPAddress subnet, IPAddress gateway)
+{
+    WiFi.softAPConfig(ip, gateway, subnet);
+}
+
+
+
 bool NetworkClass::connect(String ssid, String password, unsigned long timeout)
 {
-    if (WiFi.status() == WL_CONNECTED)
+    switch(WiFi.getMode())
     {
-        return true;
+        case WIFI_STA:
+            if (WiFi.status() == WL_CONNECTED)
+            {
+                return true;
+            }
+            WiFi.begin(ssid.c_str(), password.c_str());
+            return _awaitConnect(timeout);
+        case WIFI_AP:
+            return WiFi.softAP(ssid.c_str());
+        default:
+            return false;                   
     }
-    WiFi.begin(ssid.c_str(), password.c_str());
-    return _awaitConnect(timeout);
 }
 
 bool NetworkClass::disconnect(bool wifioff)

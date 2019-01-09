@@ -2,7 +2,6 @@
 #define app_views_portal_index_h
 
 #include <Arduino.h>
-#include "portal.h"
 #include "html.h"
 #include "config.h"
 #include "menu.h"

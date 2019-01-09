@@ -11,6 +11,7 @@ void config_activate(config_activation_t data)
     config_access_set(data);
     Data.write(_ACTIVATED_ADDR, YES);
     Data.save();
+    LOG_INFO("Device Activated.")
 }
 
 bool config_activated()
