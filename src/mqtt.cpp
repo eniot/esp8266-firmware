@@ -3,9 +3,7 @@
 #include <ESP8266WiFi.h>
 #include "config.h"
 #include "logger.h"
-
-#define _MQTT_ACK "hi"
-#define _MQTT_ACK_INTERVAL 10000
+#include "command/mqtt.h"
 
 bool _mqtt_enabled = false;
 config_mqtt_t _mqtt_cfg;
@@ -51,7 +49,7 @@ bool _tryconnect()
     LOG_INFO("MQTT Connected");
     PRINTSTATUS("Topic IN", _mqtt_inTopic);
     PRINTSTATUS("Topic OUT", _mqtt_outTopic);
-    _mqttclient.publish(_mqtt_outTopic.c_str(), _MQTT_ACK);    
+    command_mqtt_ack();
     _mqttclient.subscribe(_mqtt_inTopic.c_str());
     return true;
 }
@@ -69,20 +67,7 @@ bool mqtt_send(const char *payload)
     return _mqttclient.publish(_mqtt_outTopic.c_str(), payload);
 }
 
-void _callback(char *topic, byte *payload, size_t length)
-{
-    LOG_TRACE("MQTT Message arrived");
-    payload[length] = '\0';
-    mqtt_command_t cmd = mqtt_parse_command(topic, payload);
-    PRINTSTATUS("Topic CMD", cmd.topic_cmd);
-    PRINTSTATUS("Topic Name", cmd.topic_name);
-    PRINTSTATUS("Domain Type", cmd.domain_type);
-    PRINTSTATUS("Domain", cmd.domain);
-    PRINTSTATUS("Command", cmd.command);
-    PRINTSTATUS("Params", cmd.params);
-}
-
-mqtt_command_t mqtt_parse_command(const char* topic, byte* payload)
+mqtt_command_t _mqtt_parse_command(const char* topic, byte* payload)
 {
     mqtt_command_t cmd;
     char tmp[4][32];
@@ -95,4 +80,17 @@ mqtt_command_t mqtt_parse_command(const char* topic, byte* payload)
     if (count >= 2) cmd.params = tmp[1];
     if (count >= 1) cmd.command = tmp[0];
     return cmd;
+}
+
+void _callback(char *topic, byte *payload, size_t length)
+{
+    LOG_TRACE("MQTT Message arrived");
+    payload[length] = '\0';
+    mqtt_command_t cmd = _mqtt_parse_command(topic, payload);
+    PRINTSTATUS("Topic CMD", cmd.topic_cmd);
+    PRINTSTATUS("Topic Name", cmd.topic_name);
+    PRINTSTATUS("Domain Type", cmd.domain_type);
+    PRINTSTATUS("Domain", cmd.domain);
+    PRINTSTATUS("Command", cmd.command);
+    PRINTSTATUS("Params", cmd.params);
 }

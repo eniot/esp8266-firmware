@@ -16,6 +16,5 @@ struct mqtt_command_t
 void mqtt_setup();
 void mqtt_execute();
 bool mqtt_send(String msg);
-mqtt_command_t mqtt_parse_command(const char* topic, byte* payload);
 
 #endif
