@@ -65,7 +65,7 @@ bool _tryconnect()
     PRINTSTATUS("Topic IN", _mqtt_topic_in);
     PRINTSTATUS("Topic OUT", _mqtt_topic_out);
     PRINTSTATUS("Topic ERR", _mqtt_topic_err);
-    _mqtt_send(MQTT_ACK, "mqtt");
+    _mqtt_send(MQTT_ACK_INIT, "mqtt");
     _mqttclient.subscribe(_mqtt_topic_in);
     return true;
 }
