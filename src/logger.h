@@ -5,10 +5,10 @@
 
 void logger_init();
 
-#define PRINT(message) Serial.print(message)
-#define PRINTLN(message) Serial.println(message)
+#define PRINT(message) Serial.print(message);
+#define PRINTLN(message) Serial.println(message);
 #define NEWLINE PRINTLN("");
-#define PRINTF(message, args...) Serial.printf(message, args)
+#define PRINTF(message, args...) Serial.printf(message, args);
 #define PRINTSTATUS(name, status) \
     PRINT("- ");                  \
     PRINT(name);                  \
