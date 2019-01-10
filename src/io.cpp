@@ -29,8 +29,7 @@ String io_status()
         }
     }
     String respStr;
-    resp.printTo(respStr);
-    PRINTLN(respStr)
+    resp.printTo(respStr);    
     return respStr;
 }
 

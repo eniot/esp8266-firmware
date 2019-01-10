@@ -78,7 +78,6 @@ void mqtt_execute()
     _mqttclient.loop();
 }
 
-
 cmd_t _mqtt_parse_cmd(const char *topic, byte *payload)
 {
     cmd_t cmd;
@@ -114,11 +113,12 @@ void _callback(char *topic, byte *payload, size_t length)
     cmd_resp_t resp = cmd_execute(cmd);
 
     String topicsuffix = cmd.domain_type;
-    if(resp.domain != "")
-        topicsuffix += String("/") + cmd.domain;        
-    
-    if(resp.success) 
-        _mqtt_send(resp.msg, topicsuffix);
-    else 
-        _mqtt_err(resp.msg, topicsuffix);
+    if (cmd.domain != "")
+        topicsuffix += String("/") + cmd.domain;
+
+    bool succeed = resp.success ? _mqtt_send(resp.msg, topicsuffix) : _mqtt_err(resp.msg, topicsuffix);
+    if (!succeed)
+    {
+        LOG_ERROR("MQTT failed to send message");    
+    }
 }
