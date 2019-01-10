@@ -84,18 +84,14 @@ cmd_t _mqtt_parse_cmd(const char *topic, byte *payload)
     char tmp[4][32];
     size_t count = sscanf(topic, "%[^'/']/%[^'/']/%[^'/']/%s", tmp[0], tmp[1], tmp[2], tmp[3]);
     if (count >= 4)
-        cmd.domain = tmp[3];
+        cmd.prop = tmp[3];
     if (count >= 3)
-        cmd.domain_type = tmp[2];
-    if (count >= 2)
-        cmd.topic_name = tmp[1];
-    if (count >= 1)
-        cmd.topic_cmd = tmp[0];
+        cmd.domain = tmp[2];
     count = sscanf((char *)payload, "%[^':']:%s", tmp[0], tmp[1]);
     if (count >= 2)
-        cmd.params = tmp[1];
+        cmd.param = tmp[1];
     if (count >= 1)
-        cmd.command = tmp[0];
+        cmd.cmd = tmp[0];
     return cmd;
 }
 
@@ -104,21 +100,19 @@ void _callback(char *topic, byte *payload, size_t length)
     LOG_TRACE("MQTT Message arrived");
     payload[length] = '\0';
     cmd_t cmd = _mqtt_parse_cmd(topic, payload);
-    PRINTSTATUS("Topic CMD", cmd.topic_cmd);
-    PRINTSTATUS("Topic Name", cmd.topic_name);
-    PRINTSTATUS("Domain Type", cmd.domain_type);
     PRINTSTATUS("Domain", cmd.domain);
-    PRINTSTATUS("Command", cmd.command);
-    PRINTSTATUS("Params", cmd.params);
+    PRINTSTATUS("Property", cmd.prop);
+    PRINTSTATUS("Command", cmd.cmd);
+    PRINTSTATUS("Parameter", cmd.param);
     cmd_resp_t resp = cmd_execute(cmd);
 
-    String topicsuffix = cmd.domain_type;
-    if (cmd.domain != "")
-        topicsuffix += String("/") + cmd.domain;
+    String topicsuffix = cmd.domain;
+    if (cmd.prop != "")
+        topicsuffix += String("/") + cmd.prop;
 
     bool succeed = resp.success ? _mqtt_send(resp.msg, topicsuffix) : _mqtt_err(resp.msg, topicsuffix);
     if (!succeed)
     {
-        LOG_ERROR("MQTT failed to send message");    
+        LOG_ERROR("MQTT failed to send message");
     }
 }
