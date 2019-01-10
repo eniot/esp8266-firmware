@@ -50,7 +50,7 @@ cmd_resp_t _cmd_execute_io(cmd_t cmd)
             return _err("io_notfound");
 
         config_gpio_t gpio = config_gpio_get(gpioindex);
-        if (gpio.function == IO_UNUSED)
+        if (gpio.func == IO_UNUSED)
             return _err("io_unused");
 
         if (cmd.cmd.equalsIgnoreCase("get"))

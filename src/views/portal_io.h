@@ -6,29 +6,33 @@
 #include "config.h"
 #include "menu.h"
 
-String _io_func_values[3] = { String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT) };
-String _io_func_displays[3] = { "Unused", "Input", "Output" };
+String _io_func_values[3] = {String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT)};
+String _io_func_displays[3] = {"Unused", "Input", "Output"};
 
-String _io_field(unsigned int ioIndex, config_gpio_t data) 
+String _io_orient_values[2] = {String(IO_ORIENT_NORMAL), String(IO_ORIENT_INVERTED)};
+String _io_orient_displays[2] = {"No", "Yes"};
+
+String _io_field(unsigned int ioIndex, config_gpio_t data)
 {
     char namefunc[10];
-    sprintf(namefunc, "%d_function", ioIndex);
+    sprintf(namefunc, "%d_func", ioIndex);
     char labelfunc[10];
-    sprintf(labelfunc, "<strong>GPIO %02d</strong>", ioIndex);     
+    sprintf(labelfunc, "<strong>GPIO %02d</strong>", ioIndex);
     char namelbl[10];
-    sprintf(namelbl, "%d_label", ioIndex);    
-    return html_radios(namefunc, labelfunc, _io_func_values, _io_func_displays, 3, String(data.function)) + 
-        html_field("text", namelbl, "Label", data.label);
+    sprintf(namelbl, "%d_label", ioIndex);
+    return html_radios(namefunc, labelfunc, _io_func_values, _io_func_displays, 3, String(data.func)) +
+           html_radios(namefunc, "Invert", _io_orient_values, _io_orient_displays, 2, String(data.orient)) +
+           html_field("text", namelbl, "Label", data.label);
 }
 
 String view_portal_io(config_io_t data)
 {
     String content = "<html lang=\"en\">" +
-        html_head("IOT Portal - IO") +
-        "<body><div class='container'><form method='POST'>" +
-        html_menu(menu_list, menu_size, "IO");
-    
-    for(size_t i = 0; i < _IO_COUNT; i++)
+                     html_head("IOT Portal - IO") +
+                     "<body><div class='container'><form method='POST'>" +
+                     html_menu(menu_list, menu_size, "IO");
+
+    for (size_t i = 0; i < _IO_COUNT; i++)
     {
         content += "<br/>" + _io_field(i, data.gpio[i]);
     }

@@ -13,7 +13,7 @@
 #include "mqtt.h"
 
 void portal_controller()
-{    
+{
     _webserver.on("/", HTTP_GET, [] {
         _webserver.send(200, "text/html", view_portal_index());
     });
@@ -41,10 +41,10 @@ void portal_controller()
     });
     _webserver.on("/io", HTTP_POST, [] {
         config_io_t data;
-        for(size_t i = 0; i < _IO_COUNT; i++)
+        for (size_t i = 0; i < _IO_COUNT; i++)
         {
             data.gpio[i].label = _webserver.arg(String(i) + "_label");
-            data.gpio[i].function = _webserver.arg(String(i) + "_function").toInt();
+            data.gpio[i].func = _webserver.arg(String(i) + "_func").toInt();
         }
         config_io_save(data);
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));
@@ -67,7 +67,6 @@ void portal_controller()
         _webserver.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
         mqtt_setup();
     });
-    
 }
 
 #endif

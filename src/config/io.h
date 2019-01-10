@@ -6,8 +6,9 @@
 
 struct config_gpio_t
 {
-    int8_t function;
+    int8_t func;
     String label;
+    int8_t orient;
 };
 
 struct config_io_t
