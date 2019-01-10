@@ -3,7 +3,7 @@
 #include "webserver.h"
 #include "logger.h"
 #include "mqtt.h"
-#include "net.h"
+#include "network.h"
 
 void setup()
 {
@@ -11,7 +11,7 @@ void setup()
     config_init();
     config_deactivate_await();
     network_setup();
-    webserver_setup();    
+    webserver_setup();
     mqtt_setup();
 }
 

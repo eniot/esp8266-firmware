@@ -58,7 +58,7 @@ bool _tryconnect()
     LOG_INFO("Attempting MQTT connection...");
     if (!_mqttclient.connect(_mqtt_clientid.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
     {
-        LOG_ERROR("MQTT connection Failed, rc: " + _mqttclient.state());
+        LOG_ERROR(String("MQTT connection Failed, rc: ") + _mqttclient.state());
         return false;
     }
     LOG_INFO("MQTT Connected");

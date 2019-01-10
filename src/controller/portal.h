@@ -2,7 +2,7 @@
 #define app_controller_portal_h
 
 #include <ESP8266WebServer.h>
-#include "net.h"
+#include "network.h"
 #include "views/portal_index.h"
 #include "views/portal_network.h"
 #include "views/portal_io.h"

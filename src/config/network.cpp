@@ -16,11 +16,19 @@ config_network_t config_network_get()
         data.subnet.fromString(Data.readStr(_SUBNET_ADDR, _SUBNET_SIZE));
         data.gateway.fromString(Data.readStr(_GATEWAY_ADDR, _GATEWAY_SIZE));
     }
+    else
+    {
+        data.ip = data.subnet = data.gateway = 0U;
+    }
     data.dns = Data.read(_DNS_ADDR) == YES;
     if (data.dns)
     {
         data.dns1.fromString(Data.readStr(_DNS1_ADDR, _DNS1_SIZE));
         data.dns1.fromString(Data.readStr(_DNS2_ADDR, _DNS2_SIZE));
+    }
+    else
+    {
+        data.dns1 = data.dns2 = 0U;
     }
     return data;
 }
@@ -51,7 +59,7 @@ void config_network_save(config_network_t data)
     Data.save();
 }
 
-String config_name_gen() 
+String config_name_gen()
 {
     String name;
     for (size_t i = 0; i < 4; i++)
@@ -75,7 +83,7 @@ String config_name_get()
     return name;
 }
 
-config_network_t config_network_default() 
+config_network_t config_network_default()
 {
     config_network_t ndata;
     ndata.dhcp = true;
