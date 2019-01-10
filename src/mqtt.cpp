@@ -36,14 +36,14 @@ void mqtt_setup()
     _mqttclient.setCallback(_callback);
 }
 
-bool _mqtt_send(String payload, String topicsuffix = "")
+bool _mqtt_send(String payload, String topicsuffix)
 {
     char topic[50];
     sprintf(topic, "%s/%s", _mqtt_topic_out, topicsuffix.c_str());
     return _mqttclient.publish(topic, payload.c_str());
 }
 
-bool _mqtt_err(String payload, String topicsuffix = "")
+bool _mqtt_err(String payload, String topicsuffix)
 {
     char topic[50];
     sprintf(topic, "%s/%s", _mqtt_topic_err, topicsuffix.c_str());
@@ -65,7 +65,7 @@ bool _tryconnect()
     PRINTSTATUS("Topic IN", _mqtt_topic_in);
     PRINTSTATUS("Topic OUT", _mqtt_topic_out);
     PRINTSTATUS("Topic ERR", _mqtt_topic_err);
-    _mqtt_send(MQTT_ACK);
+    _mqtt_send(MQTT_ACK, "mqtt");
     _mqttclient.subscribe(_mqtt_topic_in);
     return true;
 }
@@ -113,11 +113,12 @@ void _callback(char *topic, byte *payload, size_t length)
     PRINTSTATUS("Params", cmd.params);
     cmd_resp_t resp = cmd_execute(cmd);
 
-    if(resp.domain == "")    
-        resp.domain = cmd.domain_type + "/" + cmd.domain;    
+    String topicsuffix = cmd.domain_type;
+    if(resp.domain != "")
+        topicsuffix += String("/") + cmd.domain;        
     
     if(resp.success) 
-        _mqtt_send(resp.msg, resp.domain);
+        _mqtt_send(resp.msg, topicsuffix);
     else 
-        _mqtt_err(resp.msg, resp.domain);
+        _mqtt_err(resp.msg, topicsuffix);
 }
