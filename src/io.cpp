@@ -1,10 +1,12 @@
 #include "io.h"
 #include "config.h"
+#include "logger.h"
 #include <ArduinoJson.h>
 #include <Arduino.h>
 
 String io_status()
 {
+    LOG_TRACE("io_status")
     config_io_t iodata = config_io_get();
     StaticJsonBuffer<400> jb;
     JsonArray &resp = jb.createArray();
@@ -28,11 +30,13 @@ String io_status()
     }
     String respStr;
     resp.printTo(respStr);
+    PRINTLN(respStr)
     return respStr;
 }
 
 bool io_update(uint8_t pin, uint8_t val)
 {
+    LOG_TRACE("io_update(pin,val)")
     config_gpio_t gpio = config_gpio_get(pin);
     if (gpio.function != IO_OUTPUT)
         return false;
@@ -42,6 +46,7 @@ bool io_update(uint8_t pin, uint8_t val)
 
 bool io_update(String status)
 {
+    LOG_TRACE("io_update(status)")
     StaticJsonBuffer<400> jb;
     JsonArray &jstat = jb.parseArray(status);
     if (!jstat.success())

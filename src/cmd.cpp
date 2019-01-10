@@ -1,8 +1,9 @@
+#include <ArduinoJson.h>
 #include "cmd.h"
 #include "mqtt.h"
 #include "config.h"
 #include "io.h"
-#include "ArduinoJson.h"
+#include "logger.h"
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd);
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd);
@@ -36,31 +37,35 @@ cmd_resp_t cmd_execute(cmd_t cmd)
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd)
 {
+    LOG_TRACE("_cmd_execute_io")
     if (cmd.domain == "")
-    {
+    {        
         if (cmd.command.equalsIgnoreCase("get"))        
             return _ok(io_status());        
         else if (cmd.command.equalsIgnoreCase("set"))        
-            return io_update(cmd.params) ? _ok(io_status()) : _err("io_update_failed");        
+            return io_update(cmd.params) ? _ok(io_status()) : _err("io_update_failed");               
+    } 
+    else 
+    {        
+        unsigned int gpioindex = config_gpio_index(cmd.domain);
+        if (gpioindex < 0)
+            return _err("io_notfound");
+
+        config_gpio_t gpio = config_gpio_get(gpioindex);
+        if (gpio.function == IO_UNUSED)
+            return _err("io_unused");
+
+        if (cmd.command.equalsIgnoreCase("get"))    
+            return _ok(String(digitalRead(gpioindex)));    
+        else if (cmd.command.equalsIgnoreCase("set"))    
+            return io_update(gpioindex, cmd.params.toInt()) ? _ok(cmd.params) : _err("io_readonly");
     }
-    unsigned int gpioindex = config_gpio_index(cmd.domain);
-    if (gpioindex < 0)
-        return _err("io_notfound");
-
-    config_gpio_t gpio = config_gpio_get(gpioindex);
-    if (gpio.function == IO_UNUSED)
-        return _err("io_unused");
-
-    if (cmd.command.equalsIgnoreCase("get"))    
-        return _ok(String(digitalRead(gpioindex)));    
-    else if (cmd.command.equalsIgnoreCase("set"))    
-        return io_update(gpioindex, cmd.params.toInt()) ? _ok(cmd.params) : _err("io_readonly");
-
     return _err("invalid_io_command");
 }
 
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd)
 {
+    LOG_TRACE("_cmd_execute_mqtt");
     if (cmd.domain.equals("") && cmd.command.equalsIgnoreCase("ack"))    
         return _ok(MQTT_ACK);    
         
