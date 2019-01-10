@@ -7,9 +7,10 @@
 
 bool _mqtt_enabled = false;
 config_mqtt_t _mqtt_cfg;
-String _mqtt_outTopic;
-String _mqtt_inTopic;
-String _mqtt_clientId;
+char _mqtt_topic_out[50];
+char _mqtt_topic_err[50];
+char _mqtt_topic_in[50];
+String _mqtt_clientid;
 
 WiFiClient _wificlient;
 PubSubClient _mqttclient(_wificlient);
@@ -26,12 +27,27 @@ void mqtt_setup()
 
     _mqtt_enabled = true;
     _mqtt_cfg = config_mqtt_get();
-    _mqtt_clientId = config_name_get();
-    _mqtt_inTopic = String("cmd/") + _mqtt_cfg.topic + String("/#");
-    _mqtt_outTopic = String("res/") + _mqtt_cfg.topic;
+    _mqtt_clientid = config_name_get();
+    sprintf(_mqtt_topic_in, "cmd/%s/#", _mqtt_cfg.topic.c_str());
+    sprintf(_mqtt_topic_out, "res/%s", _mqtt_cfg.topic.c_str());
+    sprintf(_mqtt_topic_err, "err/%s", _mqtt_cfg.topic.c_str());
     PRINTSTATUS("MQTT", _mqtt_cfg.server + " port " + _mqtt_cfg.port);
     _mqttclient.setServer(_mqtt_cfg.server.c_str(), _mqtt_cfg.port);
     _mqttclient.setCallback(_callback);
+}
+
+bool _mqtt_send(String payload, String topicsuffix = "")
+{
+    char topic[50];
+    sprintf(topic, "%s/%s", _mqtt_topic_out, topicsuffix.c_str());
+    return _mqttclient.publish(topic, payload.c_str());
+}
+
+bool _mqtt_err(String payload, String topicsuffix = "")
+{
+    char topic[50];
+    sprintf(topic, "%s/%s", _mqtt_topic_err, topicsuffix.c_str());
+    return _mqttclient.publish(topic, payload.c_str());
 }
 
 bool _tryconnect()
@@ -40,16 +56,17 @@ bool _tryconnect()
         return true;
 
     LOG_INFO("Attempting MQTT connection...");
-    if (!_mqttclient.connect(_mqtt_clientId.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
+    if (!_mqttclient.connect(_mqtt_clientid.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
     {
         LOG_ERROR("MQTT connection Failed, rc: " + _mqttclient.state());
         return false;
     }
     LOG_INFO("MQTT Connected");
-    PRINTSTATUS("Topic IN", _mqtt_inTopic);
-    PRINTSTATUS("Topic OUT", _mqtt_outTopic);
-    mqtt_send(MQTT_ACK);
-    _mqttclient.subscribe(_mqtt_inTopic.c_str());
+    PRINTSTATUS("Topic IN", _mqtt_topic_in);
+    PRINTSTATUS("Topic OUT", _mqtt_topic_out);
+    PRINTSTATUS("Topic ERR", _mqtt_topic_err);
+    _mqtt_send(MQTT_ACK);
+    _mqttclient.subscribe(_mqtt_topic_in);
     return true;
 }
 
@@ -61,15 +78,6 @@ void mqtt_execute()
     _mqttclient.loop();
 }
 
-bool mqtt_send(String payload, String domain)
-{
-    if (domain == "")
-    {
-        _mqtt_outTopic += "/";
-        _mqtt_outTopic += domain;
-    }
-    return _mqttclient.publish(_mqtt_outTopic.c_str(), payload.c_str());
-}
 
 cmd_t _mqtt_parse_cmd(const char *topic, byte *payload)
 {
@@ -103,5 +111,13 @@ void _callback(char *topic, byte *payload, size_t length)
     PRINTSTATUS("Domain", cmd.domain);
     PRINTSTATUS("Command", cmd.command);
     PRINTSTATUS("Params", cmd.params);
-    cmd_execute(cmd);
+    cmd_resp_t resp = cmd_execute(cmd);
+
+    if(resp.domain == "")    
+        resp.domain = cmd.domain_type + "/" + cmd.domain;    
+    
+    if(resp.success) 
+        _mqtt_send(resp.msg, resp.domain);
+    else 
+        _mqtt_err(resp.msg, resp.domain);
 }

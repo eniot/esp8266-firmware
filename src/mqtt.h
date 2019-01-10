@@ -7,6 +7,5 @@
 
 void mqtt_setup();
 void mqtt_execute();
-bool mqtt_send(String payload, String domain = "");
 
 #endif
