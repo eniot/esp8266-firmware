@@ -79,7 +79,7 @@
 #define _IO_ORIENT_SIZE 1
 #define _IO_LABEL_SIZE 16
 #define _IO_COUNT 17
-#define _IO_SIZE ((_IO_LABEL_SIZE + _IO_FUNC_SIZE) * _IO_COUNT)
+#define _IO_SIZE ((_IO_LABEL_SIZE + _IO_FUNC_SIZE + _IO_ORIENT_SIZE) * _IO_COUNT)
 
 // END EEPROM
 #define _END_ADDR (_IO_ADDR + _IO_SIZE)

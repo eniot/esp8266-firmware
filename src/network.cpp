@@ -51,3 +51,9 @@ void network_setup()
 {
     return config_activated() ? _network_sta() : _network_ap();
 }
+
+void network_execute()
+{
+    if(WiFi.getMode() == WIFI_STA && WiFi.status() != WL_CONNECTED)
+        network_setup();
+}

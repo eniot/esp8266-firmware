@@ -22,6 +22,7 @@ void setup()
 
 void loop()
 {
+    network_execute();
     webserver_execute();
     mqtt_execute();
 }
