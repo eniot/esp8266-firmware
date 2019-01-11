@@ -10,5 +10,6 @@
 #include "config/io.h"
 
 void config_init();
+void config_reset();
 
 #endif

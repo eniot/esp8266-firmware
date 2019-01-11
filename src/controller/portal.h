@@ -45,6 +45,7 @@ void portal_controller()
         {
             data.gpio[i].label = _webserver.arg(String(i) + "_label");
             data.gpio[i].func = _webserver.arg(String(i) + "_func").toInt();
+            data.gpio[i].orient = _webserver.arg(String(i) + "_orient").toInt();
         }
         config_io_save(data);
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));

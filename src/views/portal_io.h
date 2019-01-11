@@ -14,14 +14,18 @@ String _io_orient_displays[2] = {"No", "Yes"};
 
 String _io_field(unsigned int ioIndex, config_gpio_t data)
 {
+    char label[25];
+    sprintf(label, "<strong>GPIO %02d</strong>", ioIndex);
+
     char namefunc[10];
     sprintf(namefunc, "%d_func", ioIndex);
-    char labelfunc[10];
-    sprintf(labelfunc, "<strong>GPIO %02d</strong>", ioIndex);
+    char nameorient[10];
+    sprintf(nameorient, "%d_orient", ioIndex);
     char namelbl[10];
     sprintf(namelbl, "%d_label", ioIndex);
-    return html_radios(namefunc, labelfunc, _io_func_values, _io_func_displays, 3, String(data.func)) +
-           html_radios(namefunc, "Invert", _io_orient_values, _io_orient_displays, 2, String(data.orient)) +
+    
+    return html_radios(namefunc, label, _io_func_values, _io_func_displays, 3, String(data.func)) +
+           html_radios(nameorient, "Invert", _io_orient_values, _io_orient_displays, 2, String(data.orient)) +
            html_field("text", namelbl, "Label", data.label);
 }
 
