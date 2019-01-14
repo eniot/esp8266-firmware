@@ -18,5 +18,5 @@ struct html_menu_t
 };
 
 String html_menu(html_menu_t items[], size_t size, String active);
-
+String html_display(String name, String value, String color = "black");
 #endif

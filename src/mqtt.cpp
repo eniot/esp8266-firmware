@@ -1,6 +1,7 @@
 #include "mqtt.h"
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
+#include <ArduinoJson.h>
 #include "config.h"
 #include <Logger.h>
 #include "cmd.h"
@@ -114,5 +115,51 @@ void _callback(char *topic, byte *payload, size_t length)
     if (!succeed)
     {
         LOG_ERROR("MQTT failed to send message");
+    }
+}
+
+String mqtt_status()
+{
+    StaticJsonBuffer<400> jb;
+    JsonObject &root = jb.createObject();
+    root["enabled"] = _mqtt_enabled;
+    root["connected"] = _mqttclient.connected() == 1;
+    root["state"] = mqtt_state_str();
+    root["client_id"] = _mqtt_clientid;
+    root["server"] = _mqtt_cfg.server;
+    root["port"] = _mqtt_cfg.port;
+    root["username"] = _mqtt_cfg.username;
+    root["topic_in"] = _mqtt_topic_in;
+    root["topic_out"] = _mqtt_topic_out;
+    root["topic_err"] = _mqtt_topic_err;
+    String status;
+    root.printTo(status);
+    return status;
+}
+
+String mqtt_state_str()
+{
+    switch (_mqttclient.state())
+    {
+    case MQTT_CONNECTION_TIMEOUT:
+        return "connection_timeout";
+    case MQTT_CONNECTION_LOST:
+        return "connection_lost";
+    case MQTT_CONNECT_FAILED:
+        return "connection_failed";
+    case MQTT_DISCONNECTED:
+        return "disconnected";
+    case MQTT_CONNECTED:
+        return "connected";
+    case MQTT_CONNECT_BAD_PROTOCOL:
+        return "bad_protocol";
+    case MQTT_CONNECT_BAD_CLIENT_ID:
+        return "bad_client_id";
+    case MQTT_CONNECT_UNAVAILABLE:
+        return "unavailable";
+    case MQTT_CONNECT_BAD_CREDENTIALS:
+        return "bad_credentials";
+    case MQTT_CONNECT_UNAUTHORIZED:
+        return "unauthorized";
     }
 }

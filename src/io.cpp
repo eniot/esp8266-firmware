@@ -108,3 +108,9 @@ void io_setup(ioindex_t pin)
         break;
     }
 }
+
+bool io_toggle(ioindex_t pin)
+{
+    int8_t tval = io_fetch(pin) == HIGH ? LOW : HIGH;
+    return io_update(pin, tval, true);
+}

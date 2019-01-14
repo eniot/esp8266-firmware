@@ -18,6 +18,11 @@ void portal_controller()
     _webserver.on("/", HTTP_GET, [] {
         _webserver.send(200, "text/html", view_portal_index());
     });
+    _webserver.on("/", HTTP_POST, [] {
+        ioindex_t pin = _webserver.arg("io_pin").toInt();
+        io_toggle(pin);
+        _webserver.send(200, "text/html", view_portal_index());
+    });
     _webserver.on("/network", HTTP_GET, [] {
         _webserver.send(200, "text/html", view_portal_network(config_network_get()));
     });

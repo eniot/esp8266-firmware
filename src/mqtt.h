@@ -9,4 +9,7 @@
 void mqtt_setup();
 void mqtt_execute();
 
+String mqtt_status();
+String mqtt_state_str();
+
 #endif

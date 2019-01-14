@@ -8,6 +8,8 @@
 
 String view_portal_network(config_network_t data)
 {
+    bool connected = WiFi.status() == WL_CONNECTED;
+    String ip = WiFi.localIP().toString();
     String enable_values[2] = {"1", "0"};
     String enable_displays[2] = {"Yes", "No"};
     return "<html lang=\"en\">" +
@@ -16,6 +18,8 @@ String view_portal_network(config_network_t data)
            "<div class='container'>" +
            html_menu(menu_list, menu_size, "Network") +
            "<form method='POST'>" +
+           html_display("Status", connected ? "connected" : "not_connected", connected ? "green" : "orange") +
+           (connected ? html_display("Local IP", ip) : "") +
            html_field("text", "name", "Device Name", data.name) +
            html_field("text", "wifi_ssid", "WiFi SSID", data.wifi_ssid) +
            html_field("text", "wifi_password", "WiFi Password", data.wifi_password) +

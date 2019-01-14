@@ -89,12 +89,12 @@ String html_head(String title)
         margin: 5px;
         flex-flow: column;
     }
-    button, label, .radios, input[type="text"],  input[type="password"], input[type="number"] {
+    button, .label, .value, label, .radios, input[type="text"],  input[type="password"], input[type="number"] {
         padding: 10px;
         font-size: 14px;
         width: 100%;
     }
-    label {
+    label, .label {
     	margin-right: 20px;
         padding: 10px 0px;
     }
@@ -128,7 +128,7 @@ String html_head(String title)
         .row {
             flex-flow: row;
         }
-        button, label, input[type="text"],  input[type="password"], input[type="number"], .radios {
+        button, label, .label, .value, input[type="text"],  input[type="password"], input[type="number"], .radios {
             width: 50%;
         }
     }
@@ -137,6 +137,27 @@ String html_head(String title)
             max-width: 800px;
             margin: auto;
         }
+    }
+    .home-io {
+        display: flex;
+        justify-content: flex-end;
+    }
+    .home-io form {
+        margin: 0px;
+    }
+    .home-io form button {
+        width: 80px;
+        height: 150;
+        margin: 10px;
+        border-radius: 54px;
+        color: #0078e7;
+        background-color: transparent;
+        border: 1px solid #0078e7;
+    }
+    .home-io form button.btn-on {
+        background-color: #0078e7;
+        color: white;
+        border: white;
     }
 </style>
 </head>
@@ -181,4 +202,11 @@ String html_menu(html_menu_t items[], size_t size, String active)
     }
     content += "</ul>";
     return content;
+}
+
+String html_display(String name, String value, String color)
+{
+    char content[400];
+    sprintf(content, "<div class='row'><span class='label'>%s</span><strong class='value' style='color:%s'>%s</strong></div>", name.c_str(), color.c_str(), value.c_str());
+    return String(content);
 }

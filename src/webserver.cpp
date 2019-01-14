@@ -2,6 +2,7 @@
 #include "views/activation_index.h"
 #include "controller/portal.h"
 #include "controller/activation.h"
+#include "controller/api.h"
 #include <Logger.h>
 #include "config.h"
 #include "mqtt.h"
@@ -15,6 +16,8 @@ void webserver_setup()
         portal_controller();
     else
         activation_controller();
+
+    api_controller();
 
     _webserver.onNotFound([]() {
         _webserver.sendHeader("Location", "/", true); //Redirect to our html web page
