@@ -2,7 +2,7 @@
 #include "config/activation.h"
 #include "config/_addr.h"
 #include "config/_constants.h"
-#include "logger.h"
+#include <Logger.h>
 
 void config_activate(config_activation_t data)
 {
@@ -69,5 +69,4 @@ config_activation_t config_activation_log()
     }
     return data;
 }
-
 

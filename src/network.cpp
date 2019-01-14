@@ -1,6 +1,6 @@
 #include "network.h"
 #include "config.h"
-#include "logger.h"
+#include <Logger.h>
 #include <ESP8266WiFi.h>
 
 void _network_sta()
@@ -54,6 +54,6 @@ void network_setup()
 
 void network_execute()
 {
-    if(WiFi.getMode() == WIFI_STA && WiFi.status() != WL_CONNECTED)
+    if (WiFi.getMode() == WIFI_STA && WiFi.status() != WL_CONNECTED)
         network_setup();
 }

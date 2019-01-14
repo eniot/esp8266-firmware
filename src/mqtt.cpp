@@ -2,7 +2,7 @@
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 #include "config.h"
-#include "logger.h"
+#include <Logger.h>
 #include "cmd.h"
 
 bool _mqtt_enabled = false;

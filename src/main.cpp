@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "config.h"
 #include "webserver.h"
-#include "logger.h"
+#include <Logger.h>
 #include "mqtt.h"
 #include "network.h"
 
@@ -11,8 +11,8 @@ void setup()
 {
     logger_init();
     config_init();
-    
-    if(reset_await())
+
+    if (reset_await())
         config_reset();
 
     network_setup();

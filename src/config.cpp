@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 #include <Data.h>
 #include "config.h"
-#include "logger.h"
+#include <Logger.h>
 
 void config_init()
 {
