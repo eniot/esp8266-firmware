@@ -11,6 +11,7 @@
 #include "controller/_utils.h"
 #include "webserver.h"
 #include "mqtt.h"
+#include "io.h"
 
 void portal_controller()
 {
@@ -49,6 +50,7 @@ void portal_controller()
         }
         config_io_save(data);
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));
+        io_setup();
     });
     _webserver.on("/mqtt", HTTP_GET, [] {
         _webserver.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));

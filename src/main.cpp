@@ -4,6 +4,7 @@
 #include <Logger.h>
 #include "mqtt.h"
 #include "network.h"
+#include "io.h"
 
 bool reset_await();
 
@@ -15,6 +16,7 @@ void setup()
     if (reset_await())
         config_reset();
 
+    io_setup();
     network_setup();
     webserver_setup();
     mqtt_setup();

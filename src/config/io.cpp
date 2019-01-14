@@ -7,23 +7,44 @@ config_io_t *_io_cfg_cache = NULL;
 
 void config_io_set(config_io_t data)
 {
-    unsigned int addr = _IO_ADDR;
-    for (size_t i = 0; i < _IO_COUNT; i++)
-    {
-        Data.write(addr, data.gpio[i].func);
-        addr += _IO_FUNC_SIZE;
-        Data.write(addr, data.gpio[i].orient);
-        addr += _IO_ORIENT_SIZE;
-        Data.writeStr(addr, data.gpio[i].label);
-        addr += _IO_LABEL_SIZE;
-    }
+    for (ioindex_t i = 0; i < _IO_COUNT; i++)
+        config_gpio_set(i, data.gpio[i]);
 }
 
 void config_io_save(config_io_t data)
 {
     config_io_set(data);
-    Data.save();
-    _io_cfg_cache = NULL;
+    config_io_commit();
+}
+
+void config_gpio_set(ioindex_t pin, config_gpio_t data)
+{
+    config_gpio_t currVal = config_gpio_get(pin);
+    unsigned int addr = _GPIO_ADDR(pin);
+
+    if (currVal.func != data.func)
+        Data.write(addr, data.func);
+
+    addr += _IO_FUNC_SIZE;
+
+    if (currVal.orient != data.orient)
+        Data.write(addr, data.orient);
+
+    addr += _IO_ORIENT_SIZE;
+
+    if (currVal.value != data.value)
+        Data.write(addr, data.value);
+
+    addr += _IO_VAL_SIZE;
+
+    if (currVal.label != data.label)
+        Data.writeStr(addr, data.label);
+}
+
+void config_gpio_save(ioindex_t pin, config_gpio_t data)
+{
+    config_gpio_set(pin, data);
+    config_io_commit();
 }
 
 config_io_t config_io_get()
@@ -39,16 +60,18 @@ config_io_t config_io_get()
         addr += _IO_FUNC_SIZE;
         data.gpio[i].orient = Data.read(addr);
         addr += _IO_ORIENT_SIZE;
+        data.gpio[i].value = Data.read(addr);
+        addr += _IO_VAL_SIZE;
         data.gpio[i].label = Data.readStr(addr, _IO_LABEL_SIZE);
         addr += _IO_LABEL_SIZE;
     }
     return data;
 }
 
-int config_gpio_index(String label)
+ioindex_t config_gpio_index(String label)
 {
     config_io_t data = config_io_get();
-    for (size_t i = 0; i < _IO_COUNT; i++)
+    for (ioindex_t i = 0; i < _IO_COUNT; i++)
     {
         if (data.gpio[i].label == label)
         {
@@ -58,7 +81,7 @@ int config_gpio_index(String label)
     return -1;
 }
 
-config_gpio_t config_gpio_get(int index)
+config_gpio_t config_gpio_get(ioindex_t index)
 {
     config_io_t data = config_io_get();
     return data.gpio[index];
@@ -67,13 +90,20 @@ config_gpio_t config_gpio_get(int index)
 config_io_t config_io_default()
 {
     config_io_t odata;
-    for (size_t i = 0; i < _IO_COUNT; i++)
+    for (ioindex_t i = 0; i < _IO_COUNT; i++)
     {
         odata.gpio[i].func = IO_UNUSED;
         odata.gpio[i].orient = IO_ORIENT_NORMAL;
+        odata.gpio[i].value = LOW;
         char labelBuff[7];
-        sprintf(labelBuff, "GPIO%02d", i);
+        sprintf(labelBuff, "GPIO%d", i);
         odata.gpio[i].label = labelBuff;
     }
     return odata;
+}
+
+void config_io_commit()
+{
+    Data.save();
+    _io_cfg_cache = NULL;
 }

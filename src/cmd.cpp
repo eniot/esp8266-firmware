@@ -54,7 +54,7 @@ cmd_resp_t _cmd_execute_io(cmd_t cmd)
             return _err("io_unused");
 
         if (cmd.cmd.equalsIgnoreCase("get"))
-            return _ok(String(digitalRead(gpioindex)));
+            return _ok(String(io_fetch(gpioindex)));
         else if (cmd.cmd.equalsIgnoreCase("set"))
             return io_update(gpioindex, cmd.param.toInt()) ? _ok(cmd.param) : _err("io_readonly");
     }

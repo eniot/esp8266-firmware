@@ -7,7 +7,7 @@
 #include "menu.h"
 
 String _io_func_values[3] = {String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT)};
-String _io_func_displays[3] = {"Unused", "Input", "Output"};
+String _io_func_displays[3] = {"Unused", "Read", "Read/Write"};
 
 String _io_orient_values[2] = {String(IO_ORIENT_NORMAL), String(IO_ORIENT_INVERTED)};
 String _io_orient_displays[2] = {"No", "Yes"};
@@ -23,7 +23,7 @@ String _io_field(unsigned int ioIndex, config_gpio_t data)
     sprintf(nameorient, "%d_orient", ioIndex);
     char namelbl[10];
     sprintf(namelbl, "%d_label", ioIndex);
-    
+
     return html_radios(namefunc, label, _io_func_values, _io_func_displays, 3, String(data.func)) +
            html_radios(nameorient, "Invert", _io_orient_values, _io_orient_displays, 2, String(data.orient)) +
            html_field("text", namelbl, "Label", data.label);

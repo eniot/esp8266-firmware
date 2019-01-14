@@ -16,7 +16,7 @@ String io_status()
         {
             JsonObject &jobj = resp.createNestedObject();
             jobj["io"] = iodata.gpio[i].label.c_str();
-            jobj["val"] = digitalRead(i);
+            jobj["val"] = io_fetch(i);
             switch (iodata.gpio[i].func)
             {
             case IO_INPUT:
@@ -33,13 +33,29 @@ String io_status()
     return respStr;
 }
 
-bool io_update(uint8_t pin, uint8_t val)
+uint8_t io_fetch(ioindex_t pin)
+{
+    LOG_TRACE("io_fetch")
+    config_gpio_t gpio = config_gpio_get(pin);
+    uint8_t val = digitalRead(pin);
+    if (gpio.orient == IO_ORIENT_INVERTED)
+        val = (val == HIGH) ? LOW : HIGH;
+    return val;
+}
+
+bool io_update(ioindex_t pin, uint8_t val, bool persist)
 {
     LOG_TRACE("io_update(pin,val)")
     config_gpio_t gpio = config_gpio_get(pin);
+    gpio.value = val;
     if (gpio.func != IO_OUTPUT)
         return false;
-    digitalWrite(pin, val == 0x01 ? HIGH : LOW);
+    if (gpio.orient == IO_ORIENT_INVERTED)
+        val = (gpio.value == HIGH) ? LOW : HIGH;
+    digitalWrite(pin, val);
+    config_gpio_set(pin, gpio);
+    if (persist)
+        config_io_commit();
     return true;
 }
 
@@ -62,7 +78,33 @@ bool io_update(String status)
         if (gpioindex < 0)
             continue;
 
-        io_update(gpioindex, jobj.get<int>("val"));
+        io_update(gpioindex, jobj.get<int>("val"), false);
     }
+    config_io_commit();
     return true;
+}
+
+void io_setup()
+{
+    config_io_t cfg = config_io_get();
+    for (ioindex_t i = 0; i < _IO_COUNT; i++)
+    {
+        io_setup(i);
+    }
+}
+
+void io_setup(ioindex_t pin)
+{
+    config_gpio_t gpio = config_gpio_get(pin);
+    switch (gpio.func)
+    {
+    case IO_INPUT:
+        pinMode(pin, INPUT);
+        break;
+    case IO_OUTPUT:
+        pinMode(pin, OUTPUT);
+        io_update(pin, gpio.value);
+    default:
+        break;
+    }
 }
