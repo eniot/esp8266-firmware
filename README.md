@@ -1,5 +1,4 @@
-# eniot
-## ESP8266 Firmware
+# enIOT | ESP8266 Firmware
 
 ESP8266 Firmware which supports
 
