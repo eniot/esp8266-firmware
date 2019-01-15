@@ -6,3 +6,5 @@ ESP8266 Firmware which supports
 
 - MQTT based operation
 
+- Web API for status updates
+
