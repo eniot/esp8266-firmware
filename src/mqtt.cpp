@@ -9,6 +9,7 @@
 bool _mqtt_enabled = false;
 config_mqtt_t _mqtt_cfg;
 char _mqtt_topic_out[50];
+char _mqtt_topic_in_boardcast[10];
 char _mqtt_topic_err[50];
 char _mqtt_topic_in[50];
 String _mqtt_clientid;
@@ -32,6 +33,7 @@ void mqtt_setup()
     sprintf(_mqtt_topic_in, "cmd/%s/#", _mqtt_cfg.topic.c_str());
     sprintf(_mqtt_topic_out, "res/%s", _mqtt_cfg.topic.c_str());
     sprintf(_mqtt_topic_err, "err/%s", _mqtt_cfg.topic.c_str());
+    strcpy(_mqtt_topic_in_boardcast, "cmd/*/#");
     PRINTSTATUS("MQTT", _mqtt_cfg.server + " port " + _mqtt_cfg.port);
     _mqttclient.setServer(_mqtt_cfg.server.c_str(), _mqtt_cfg.port);
     _mqttclient.setCallback(_callback);
@@ -68,6 +70,7 @@ bool _tryconnect()
     PRINTSTATUS("Topic ERR", _mqtt_topic_err);
     _mqtt_send(MQTT_ACK_INIT, "mqtt");
     _mqttclient.subscribe(_mqtt_topic_in);
+    _mqttclient.subscribe(_mqtt_topic_in_boardcast);
     return true;
 }
 
@@ -161,5 +164,7 @@ String mqtt_state_str()
         return "bad_credentials";
     case MQTT_CONNECT_UNAUTHORIZED:
         return "unauthorized";
-    }
+    default:
+        return "unknown_state";
+    };
 }

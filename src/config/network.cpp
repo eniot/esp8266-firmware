@@ -27,7 +27,7 @@ void config_network_set(config_network_t data)
         data.dns1 = data.dns2 = 0U;
     
     Data.writeStr(_NAME_ADDR, data.name);
-    Data.writeStr(_WIFI_SSID_ADDR, data.wifi_ssid, true);
+    Data.writeStr(_WIFI_SSID_ADDR, data.wifi_ssid);
     Data.writeStr(_WIFI_PASSWORD_ADDR, data.wifi_password);
     Data.write(_DHCP_ADDR, data.dhcp ? YES : NO);    
     Data.writeStr(_IP_ADDR, data.ip.toString(), true);
@@ -75,11 +75,6 @@ config_network_t config_network_default()
     ndata.dns = false;
     ndata.name = config_name_gen();
     ndata.wifi_ssid = "";
-    ndata.wifi_password = "";
-    ndata.ip.fromString("0.0.0.0");
-    ndata.gateway.fromString("0.0.0.0");
-    ndata.subnet.fromString("0.0.0.0");
-    ndata.dns1.fromString("0.0.0.0");
-    ndata.dns2.fromString("0.0.0.0");
+    ndata.wifi_password = "";    
     return ndata;
 }
