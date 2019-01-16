@@ -10,8 +10,10 @@ String view_activation_index_content(config_activation_t data, String actionTitl
     String enable_values[2] = {"1", "0"};
     String enable_displays[2] = {"Yes", "No"};
     return "<form method=\"POST\" action=\"/\">" +
-           html_field("text", "name", "Device Name", data.name) +
+           html_display("Username", "admin") +
            html_field("text", "access", "Access Password", data.access) +
+           "<br/>" +
+           html_field("text", "name", "Device Name", data.name) +
            html_field("text", "wifi_ssid", "WiFi SSID", data.wifi_ssid) +
            html_field("text", "wifi_password", "WiFi Password", data.wifi_password) +
            html_radios("dhcp", "DHCP Enable", enable_values, enable_displays, 2, data.dhcp ? "1" : "0") +

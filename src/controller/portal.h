@@ -16,17 +16,25 @@
 void portal_controller()
 {
     _webserver.on("/", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_index());
     });
     _webserver.on("/", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         ioindex_t pin = _webserver.arg("io_pin").toInt();
         io_toggle(pin);
         _webserver.send(200, "text/html", view_portal_index());
     });
     _webserver.on("/network", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_network(config_network_get()));
     });
     _webserver.on("/network", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         config_network_t data;
         _update_network_from_web(&data);
         config_network_save(data);
@@ -34,18 +42,26 @@ void portal_controller()
         network_setup();
     });
     _webserver.on("/access", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_access(config_access_get()));
     });
     _webserver.on("/access", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         config_access_t data;
         _update_access_from_web(&data);
         config_access_save(data);
         _webserver.send(200, "text/html", view_portal_access(config_access_get()));
     });
     _webserver.on("/io", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));
     });
     _webserver.on("/io", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         config_io_t data;
         for (size_t i = 0; i < _IO_COUNT; i++)
         {
@@ -58,9 +74,13 @@ void portal_controller()
         io_setup();
     });
     _webserver.on("/mqtt", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_mqtt(config_mqtt_get()));
     });
     _webserver.on("/mqtt", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
         config_mqtt_t data;
         data.enabled = _webserver.arg("mqtt") == "1";
         if (data.enabled)

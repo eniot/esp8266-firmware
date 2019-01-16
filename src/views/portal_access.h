@@ -14,6 +14,7 @@ String view_portal_access(config_access_t data)
            "<div class='container'>" +
            html_menu(menu_list, menu_size, "Access") +
            "<form method='POST'>" +
+           html_display("Username", "admin") +
            html_field("text", "access", "Access Password", data.access) +
            html_button("Change Password") +
            "</form>" +

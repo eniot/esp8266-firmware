@@ -25,3 +25,12 @@ void _update_access_from_web(config_access_t *data)
 {
     data->access = _webserver.arg("access");
 }
+
+bool _check_auth()
+{
+    String password = config_access_get().access;
+    password.trim();
+    if(password == "") 
+        return true;
+    return _webserver.authenticate("admin", password.c_str());
+}

@@ -6,4 +6,6 @@
 void _update_network_from_web(config_network_t *data);
 void _update_access_from_web(config_access_t *data);
 
+bool _check_auth();
+
 #endif
