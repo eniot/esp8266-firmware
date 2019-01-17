@@ -20,10 +20,10 @@ String io_status()
             switch (iodata.gpio[i].func)
             {
             case IO_INPUT:
-                jobj["func"] = "ro";
+                jobj["mode"] = "ro";
                 break;
             case IO_OUTPUT:
-                jobj["func"] = "rw";
+                jobj["mode"] = "rw";
                 break;
             }
         }
