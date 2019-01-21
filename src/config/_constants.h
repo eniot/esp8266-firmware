@@ -8,7 +8,7 @@
 #define IO_INPUT 0x01
 #define IO_OUTPUT 0x02
 
-#define IO_ORIENT_NORMAL 0x01
-#define IO_ORIENT_INVERTED 0x02
+#define IO_FLG_INVERT   0b10000000
+#define IO_FLG_PERSIST  0b01000000
 
 #endif

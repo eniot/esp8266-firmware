@@ -38,7 +38,7 @@ uint8_t io_fetch(ioindex_t pin)
     LOG_TRACE("io_fetch")
     config_gpio_t gpio = config_gpio_get(pin);
     uint8_t val = digitalRead(pin);
-    if (gpio.orient == IO_ORIENT_INVERTED)
+    if (gpio.invert)
         val = (val == HIGH) ? LOW : HIGH;
     return val;
 }
@@ -47,15 +47,18 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist)
 {
     LOG_TRACE("io_update(pin,val)")
     config_gpio_t gpio = config_gpio_get(pin);
-    gpio.value = val;
-    if (gpio.func != IO_OUTPUT)
+    if (gpio.func != IO_OUTPUT)    
         return false;
-    if (gpio.orient == IO_ORIENT_INVERTED)
-        val = (gpio.value == HIGH) ? LOW : HIGH;
+    if (gpio.invert)    
+        val = (val == HIGH) ? LOW : HIGH;    
     digitalWrite(pin, val);
-    config_gpio_set(pin, gpio);
-    if (persist)
-        config_io_commit();
+    if (gpio.persist) 
+    {
+        gpio.value = val;
+        config_gpio_set(pin, gpio);
+        if (persist)        
+            config_io_commit();        
+    }
     return true;
 }
 

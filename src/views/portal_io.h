@@ -9,24 +9,27 @@
 String _io_func_values[3] = {String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT)};
 String _io_func_displays[3] = {"Unused", "Read", "Read/Write"};
 
-String _io_orient_values[2] = {String(IO_ORIENT_NORMAL), String(IO_ORIENT_INVERTED)};
-String _io_orient_displays[2] = {"No", "Yes"};
+String _io_yesno_values[2] = {"no", "yes"};
+String _io_yesno_displays[2] = {"No", "Yes"};
 
 String _io_field(unsigned int ioIndex, config_gpio_t data)
 {
     char label[25];
     sprintf(label, "<strong>GPIO %02d</strong>", ioIndex);
 
-    char namefunc[10];
-    sprintf(namefunc, "%d_func", ioIndex);
-    char nameorient[10];
-    sprintf(nameorient, "%d_orient", ioIndex);
-    char namelbl[10];
-    sprintf(namelbl, "%d_label", ioIndex);
+    char name_func[10];
+    sprintf(name_func, "%d_func", ioIndex);
+    char name_invert[15];
+    sprintf(name_invert, "%d_invert", ioIndex);
+    char name_persist[15];
+    sprintf(name_persist, "%d_persist", ioIndex);
+    char name_label[10];
+    sprintf(name_label, "%d_label", ioIndex);
 
-    return html_radios(namefunc, label, _io_func_values, _io_func_displays, 3, String(data.func)) +
-           html_radios(nameorient, "Invert", _io_orient_values, _io_orient_displays, 2, String(data.orient)) +
-           html_field("text", namelbl, "Label", data.label);
+    return html_radios(name_func, label, _io_func_values, _io_func_displays, 3, String(data.func)) +
+           html_radios(name_invert, "Invert", _io_yesno_values, _io_yesno_displays, 2, data.invert? "yes": "no") +
+           html_radios(name_persist, "Persist", _io_yesno_values, _io_yesno_displays, 2, data.persist? "yes": "no") +
+           html_field("text", name_label, "Label", data.label);
 }
 
 String view_portal_io(config_io_t data)
