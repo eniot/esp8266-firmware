@@ -106,6 +106,7 @@ void io_setup(ioindex_t pin)
         break;
     case IO_OUTPUT:
         pinMode(pin, OUTPUT);
+        LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value)
         io_update(pin, gpio.value);
     default:
         break;
