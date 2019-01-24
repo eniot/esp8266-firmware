@@ -30,9 +30,10 @@ void mqtt_setup()
     _mqtt_enabled = true;
     _mqtt_cfg = config_mqtt_get();
     _mqtt_clientid = config_name_get();
-    sprintf(_mqtt_topic_in, "cmd/%s/#", _mqtt_cfg.topic.c_str());
-    sprintf(_mqtt_topic_out, "res/%s", _mqtt_cfg.topic.c_str());
-    sprintf(_mqtt_topic_err, "err/%s", _mqtt_cfg.topic.c_str());    
+    String topic = _mqtt_cfg.topic == "" ? config_name_get() : _mqtt_cfg.topic;
+    sprintf(_mqtt_topic_in, "cmd/%s/#", topic.c_str());
+    sprintf(_mqtt_topic_out, "res/%s", topic.c_str());
+    sprintf(_mqtt_topic_err, "err/%s", topic.c_str());
     strcpy(_mqtt_topic_in_boardcast, "cmd/*/#\0");
     PRINTSTATUS("MQTT", _mqtt_cfg.server + " port " + _mqtt_cfg.port);
     _mqttclient.setServer(_mqtt_cfg.server.c_str(), _mqtt_cfg.port);

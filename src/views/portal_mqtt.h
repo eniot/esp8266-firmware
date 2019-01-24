@@ -23,7 +23,7 @@ String view_portal_mqtt(config_mqtt_t data)
            "<div id=\"mqtt-section\">" +
            html_field("text", "server", "Server (Broker)", data.server, "mqtt-input") +
            html_field("number", "port", "Port", String(data.port), "mqtt-input") +
-           html_field("text", "topic", "Topic", data.topic, "mqtt-input") +
+           html_field("text", "topic", "Topic", data.topic, "mqtt-input", false) +
            html_field("text", "username", "Username", data.username, "mqtt-input", false) +
            html_field("text", "password", "Password", data.password, "mqtt-input", false) +
            "</div>" +
