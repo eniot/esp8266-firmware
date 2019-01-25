@@ -40,14 +40,14 @@ void mqtt_setup()
     _mqttclient.setCallback(_callback);
 }
 
-bool _mqtt_send(String payload, String topicsuffix)
+bool mqtt_send(String payload, String topicsuffix)
 {
     char topic[50];
     sprintf(topic, "%s/%s", _mqtt_topic_out, topicsuffix.c_str());
     return _mqttclient.publish(topic, payload.c_str());
 }
 
-bool _mqtt_err(String payload, String topicsuffix)
+bool mqtt_err(String payload, String topicsuffix)
 {
     char topic[50];
     sprintf(topic, "%s/%s", _mqtt_topic_err, topicsuffix.c_str());
@@ -69,7 +69,7 @@ bool _tryconnect()
     PRINTSTATUS("Topic IN", _mqtt_topic_in);
     PRINTSTATUS("Topic OUT", _mqtt_topic_out);
     PRINTSTATUS("Topic ERR", _mqtt_topic_err);
-    _mqtt_send(MQTT_ACK_INIT, "mqtt");
+    mqtt_send(MQTT_ACK_INIT, "mqtt");
     _mqttclient.subscribe(_mqtt_topic_in);
     _mqttclient.subscribe(_mqtt_topic_in_boardcast);
     return true;
@@ -115,7 +115,7 @@ void _callback(char *topic, byte *payload, size_t length)
     if (cmd.prop != "")
         topicsuffix += String("/") + cmd.prop;
 
-    bool succeed = resp.success ? _mqtt_send(resp.msg, topicsuffix) : _mqtt_err(resp.msg, topicsuffix);
+    bool succeed = resp.success ? mqtt_send(resp.msg, topicsuffix) : mqtt_err(resp.msg, topicsuffix);
     if (!succeed)
     {
         LOG_ERROR("MQTT failed to send message");

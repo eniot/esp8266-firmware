@@ -3,6 +3,7 @@
 #include <Logger.h>
 #include <ArduinoJson.h>
 #include <Arduino.h>
+#include "mqtt.h"
 
 String io_status()
 {
@@ -43,9 +44,9 @@ uint8_t io_fetch(ioindex_t pin)
     return val;
 }
 
-bool io_update(ioindex_t pin, uint8_t val, bool persist)
+bool io_update(ioindex_t pin, uint8_t val, bool persist, bool publish)
 {
-    LOG_TRACE("io_update(pin,val)")
+    LOGF_TRACE("io_update(pin:%d, val:%d, persist:%d, publish:%d)", pin, val, persist, publish)
     config_gpio_t gpio = config_gpio_get(pin);
     if (gpio.func != IO_OUTPUT)    
         return false;
@@ -58,6 +59,9 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist)
         config_gpio_set(pin, gpio);
         if (persist)        
             config_io_commit();        
+    }
+    if(publish) {
+        mqtt_send(String(val), String("io/") + gpio.label);
     }
     return true;
 }
@@ -113,8 +117,8 @@ void io_setup(ioindex_t pin)
     }
 }
 
-bool io_toggle(ioindex_t pin)
+bool io_toggle(ioindex_t pin, bool publish)
 {
     int8_t tval = io_fetch(pin) == HIGH ? LOW : HIGH;
-    return io_update(pin, tval, true);
+    return io_update(pin, tval, true, publish);
 }
