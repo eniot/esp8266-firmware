@@ -50,18 +50,19 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist, bool publish)
     config_gpio_t gpio = config_gpio_get(pin);
     if (gpio.func != IO_OUTPUT)    
         return false;
+
+    gpio.value = val;
     if (gpio.invert)    
         val = (val == HIGH) ? LOW : HIGH;    
     digitalWrite(pin, val);
     if (gpio.persist) 
-    {
-        gpio.value = val;
+    {        
         config_gpio_set(pin, gpio);
         if (persist)        
             config_io_commit();        
     }
     if(publish) {
-        mqtt_send(String(val), String("io/") + gpio.label);
+        mqtt_send(String(gpio.value), String("io/") + gpio.label);
     }
     return true;
 }
