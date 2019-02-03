@@ -81,7 +81,9 @@
 #define _IO_LABEL_SIZE 16
 #define _GPIO_SIZE (_IO_LABEL_SIZE + _IO_FUNC_SIZE + _IO_FLAG_SIZE + _IO_VAL_SIZE)
 #define _GPIO_ADDR(ioindex) (_IO_ADDR + (_GPIO_SIZE * ioindex))
-#define _IO_COUNT 17
+#define _IO_STARTPIN 0
+#define _IO_ENDPIN 16
+#define _IO_COUNT (_IO_ENDPIN + 1)
 #define _IO_SIZE (_GPIO_SIZE * _IO_COUNT)
 
 // END EEPROM

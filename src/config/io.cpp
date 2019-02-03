@@ -26,10 +26,14 @@ void config_gpio_set(ioindex_t pin, config_gpio_t data)
         Data.write(addr, data.func);
 
     addr += _IO_FUNC_SIZE;
-    
+
     uint8_t flags = 0b00000000;
-    if (data.invert) flags |= IO_FLG_INVERT;
-    if (data.persist) flags |= IO_FLG_PERSIST;
+    if (data.invert)
+        flags |= IO_FLG_INVERT;
+    if (data.persist)
+        flags |= IO_FLG_PERSIST;
+    if (data.toggle)
+        flags |= IO_FLG_TOGGLE;
     Data.write(addr, flags);
 
     addr += _IO_FLAG_SIZE;
@@ -60,15 +64,16 @@ config_io_t config_io_get()
     {
         data.gpio[i].func = Data.read(addr);
         addr += _IO_FUNC_SIZE;
-        
+
         uint8_t flags = Data.read(addr);
         data.gpio[i].invert = (flags & IO_FLG_INVERT) == IO_FLG_INVERT;
         data.gpio[i].persist = (flags & IO_FLG_PERSIST) == IO_FLG_PERSIST;
+        data.gpio[i].toggle = (flags & IO_FLG_TOGGLE) == IO_FLG_TOGGLE;
         addr += _IO_FLAG_SIZE;
-        
+
         data.gpio[i].value = Data.read(addr);
         addr += _IO_VAL_SIZE;
-        
+
         data.gpio[i].label = Data.readStr(addr, _IO_LABEL_SIZE);
         addr += _IO_LABEL_SIZE;
     }
@@ -102,6 +107,8 @@ config_io_t config_io_default()
         odata.gpio[i].func = IO_UNUSED;
         odata.gpio[i].invert = false;
         odata.gpio[i].persist = false;
+        odata.gpio[i].toggle = false;
+        odata.gpio[i].readpin = -1;
         odata.gpio[i].value = LOW;
         char labelBuff[7];
         sprintf(labelBuff, "GPIO%d", i);

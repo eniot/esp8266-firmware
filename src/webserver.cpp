@@ -1,7 +1,7 @@
 #include "webserver.h"
-#include "views/activation_index.h"
+#include "views/setup_index.h"
 #include "controller/portal.h"
-#include "controller/activation.h"
+#include "controller/setup.h"
 #include "controller/api.h"
 #include <Logger.h>
 #include "config.h"
@@ -12,10 +12,10 @@ ESP8266WebServer _webserver(80);
 
 void webserver_setup()
 {
-    if (config_activated())
+    if (config_setup_complete())
         portal_controller();
     else
-        activation_controller();
+        setup_controller();
 
     api_controller();
 

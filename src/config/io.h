@@ -12,7 +12,9 @@ struct config_gpio_t
     String label;
     int8_t value;
     bool invert;
-    bool persist;    
+    bool persist;
+    bool toggle;
+    ioindex_t readpin;
 };
 
 struct config_io_t

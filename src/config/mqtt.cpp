@@ -12,7 +12,7 @@ bool config_mqtt_enabled()
 config_mqtt_t config_mqtt_get()
 {
     config_mqtt_t data;
-    data.enabled = config_mqtt_enabled();
+    data.mqtt = config_mqtt_enabled();
     data.server = Data.readStr(_MQTT_SERVER_ADDR, _MQTT_SERVER_SIZE);
     data.port = Data.read16(_MQTT_PORT_ADDR);
     data.username = Data.readStr(_MQTT_USERNAME_ADDR, _MQTT_USERNAME_SIZE);
@@ -23,9 +23,9 @@ config_mqtt_t config_mqtt_get()
 
 void config_mqtt_set(config_mqtt_t data)
 {
-    Data.write(_MQTT_ENABLED_ADDR, data.enabled ? YES : NO);
+    Data.write(_MQTT_ENABLED_ADDR, data.mqtt ? YES : NO);
     Data.writeStr(_MQTT_SERVER_ADDR, data.server, true);
-    Data.write16(_MQTT_PORT_ADDR, data.port);
+    Data.write16(_MQTT_PORT_ADDR, data.port == 0 ? 1883 : data.port);
     Data.writeStr(_MQTT_USERNAME_ADDR, data.username);
     Data.writeStr(_MQTT_PASSWORD_ADDR, data.password);
     Data.writeStr(_MQTT_TOPIC_ADDR, data.topic);
@@ -40,7 +40,7 @@ void config_mqtt_save(config_mqtt_t data)
 config_mqtt_t config_mqtt_default()
 {
     config_mqtt_t mdata;
-    mdata.enabled = false;
+    mdata.mqtt = false;
     mdata.server = "mqtt.local";
     mdata.port = 1883;
     mdata.topic = "";

@@ -1,5 +1,4 @@
 #include "mqtt.h"
-#include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 #include "config.h"
@@ -21,7 +20,7 @@ void _callback(char *topic, byte *payload, unsigned int length);
 
 void mqtt_setup()
 {
-    if (!config_activated() || !config_mqtt_enabled())
+    if (!config_setup_complete() || !config_mqtt_enabled())
         return;
 
     if (_mqttclient.connected())

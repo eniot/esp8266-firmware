@@ -5,7 +5,7 @@
 
 struct config_mqtt_t
 {
-    bool enabled;
+    bool mqtt;
     String server;
     int16_t port;
     String username;

@@ -6,8 +6,8 @@
 #include "config.h"
 #include "menu.h"
 
-String _io_func_values[3] = {String(IO_UNUSED), String(IO_INPUT), String(IO_OUTPUT)};
-String _io_func_displays[3] = {"Unused", "Read", "Read/Write"};
+String _io_func_values[4] = {String(IO_UNUSED), String(IO_READONLY), String(IO_READWRITE), String(IO_WRITEONLY)};
+String _io_func_displays[4] = {"Unused", "Read Only", "Read/Write", "Write Only"};
 
 String _io_yesno_values[2] = {"no", "yes"};
 String _io_yesno_displays[2] = {"No", "Yes"};
@@ -15,7 +15,7 @@ String _io_yesno_displays[2] = {"No", "Yes"};
 String _io_field(unsigned int ioIndex, config_gpio_t data)
 {
     char label[25];
-    sprintf(label, "<strong>GPIO %02d</strong>", ioIndex);
+    sprintf(label, "<b>GPIO %02d</b>", ioIndex);
 
     char name_func[10];
     sprintf(name_func, "%d_func", ioIndex);
@@ -23,12 +23,15 @@ String _io_field(unsigned int ioIndex, config_gpio_t data)
     sprintf(name_invert, "%d_invert", ioIndex);
     char name_persist[15];
     sprintf(name_persist, "%d_persist", ioIndex);
+    char name_toggle[15];
+    sprintf(name_toggle, "%d_toggle", ioIndex);
     char name_label[10];
     sprintf(name_label, "%d_label", ioIndex);
 
-    return html_radios(name_func, label, _io_func_values, _io_func_displays, 3, String(data.func)) +
-           html_radios(name_invert, "Invert", _io_yesno_values, _io_yesno_displays, 2, data.invert? "yes": "no") +
-           html_radios(name_persist, "Persist", _io_yesno_values, _io_yesno_displays, 2, data.persist? "yes": "no") +
+    return html_radios(name_func, label, _io_func_values, _io_func_displays, 4, String(data.func)) +
+           html_radios(name_invert, "Invert", _io_yesno_values, _io_yesno_displays, 2, data.invert ? "yes" : "no") +
+           html_radios(name_persist, "Persist", _io_yesno_values, _io_yesno_displays, 2, data.persist ? "yes" : "no") +
+           html_radios(name_toggle, "Toggle", _io_yesno_values, _io_yesno_displays, 2, data.toggle ? "yes" : "no") +
            html_field("text", name_label, "Label", data.label);
 }
 

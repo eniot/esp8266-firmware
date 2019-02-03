@@ -19,11 +19,14 @@ String io_status()
             jobj["val"] = io_fetch(i);
             switch (iodata.gpio[i].func)
             {
-            case IO_INPUT:
+            case IO_READONLY:
                 jobj["mode"] = "ro";
                 break;
-            case IO_OUTPUT:
+            case IO_READWRITE:
                 jobj["mode"] = "rw";
+                break;
+            case IO_WRITEONLY:
+                jobj["mode"] = io_valid_pin(iodata.gpio[i].readpin) ? "rw" : "wo";
                 break;
             }
         }
@@ -47,17 +50,19 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist)
 {
     LOG_TRACE("io_update(pin,val)")
     config_gpio_t gpio = config_gpio_get(pin);
-    if (gpio.func != IO_OUTPUT)    
+    if (gpio.func != IO_READONLY)
         return false;
-    if (gpio.invert)    
-        val = (val == HIGH) ? LOW : HIGH;    
+    if (gpio.toggle)
+        val = HIGH;
+    if (gpio.invert)
+        val = (val == HIGH) ? LOW : HIGH;
     digitalWrite(pin, val);
-    if (gpio.persist) 
+    if (gpio.persist)
     {
         gpio.value = val;
         config_gpio_set(pin, gpio);
-        if (persist)        
-            config_io_commit();        
+        if (persist)
+            config_io_commit();
     }
     return true;
 }
@@ -101,10 +106,11 @@ void io_setup(ioindex_t pin)
     config_gpio_t gpio = config_gpio_get(pin);
     switch (gpio.func)
     {
-    case IO_INPUT:
+    case IO_READONLY:
         pinMode(pin, INPUT);
         break;
-    case IO_OUTPUT:
+    case IO_READWRITE:
+    case IO_WRITEONLY:
         pinMode(pin, OUTPUT);
         LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value)
         io_update(pin, gpio.value);
@@ -117,4 +123,9 @@ bool io_toggle(ioindex_t pin)
 {
     int8_t tval = io_fetch(pin) == HIGH ? LOW : HIGH;
     return io_update(pin, tval, true);
+}
+
+bool io_valid_pin(ioindex_t pin)
+{
+    return pin >= _IO_STARTPIN && pin <= _IO_ENDPIN;
 }

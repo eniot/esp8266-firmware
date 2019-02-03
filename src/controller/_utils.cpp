@@ -26,11 +26,33 @@ void _update_access_from_web(config_access_t *data)
     data->access = _webserver.arg("access");
 }
 
+void _update_mqtt_from_web(config_mqtt_t *data)
+{
+    data->mqtt = _webserver.arg("mqtt") == "1";
+    if (data->mqtt)
+    {
+        data->server = _webserver.arg("server");
+        data->port = _webserver.arg("port").toInt();
+        data->topic = _webserver.arg("topic");
+        data->username = _webserver.arg("username");
+        data->password = _webserver.arg("password");
+    }
+}
+
 bool _check_auth()
 {
+    if (!config_setup_complete())
+        return true;
     String password = config_access_get().access;
     password.trim();
-    if(password == "") 
+    if (password == "")
         return true;
     return _webserver.authenticate("admin", password.c_str());
+}
+
+void _update_setup_from_web(config_setup_t *data)
+{
+    _update_access_from_web(data);
+    _update_network_from_web(data);
+    _update_mqtt_from_web(data);
 }

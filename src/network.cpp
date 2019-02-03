@@ -4,11 +4,11 @@
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 
-config_activation_t _cfg_network;
+config_network_t _cfg_network;
 
 void _network_sta()
 {
-    _cfg_network = config_activation_log();
+    _cfg_network = config_network_get();
 
     if (WiFi.status() == WL_CONNECTED)
         WiFi.disconnect();
@@ -52,7 +52,7 @@ void _network_ap()
 
 void network_setup()
 {
-    return config_activated() ? _network_sta() : _network_ap();
+    return config_setup_complete() ? _network_sta() : _network_ap();
 }
 
 void network_execute()
