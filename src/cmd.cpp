@@ -38,7 +38,7 @@ cmd_resp_t cmd_execute(cmd_t cmd)
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd)
 {
-    LOG_TRACE("_cmd_execute_io")
+    LOG_TRACE("_cmd_execute_io");
     if (cmd.prop == "")
     {
         if (cmd.cmd.equalsIgnoreCase("get"))

@@ -39,15 +39,15 @@ void _network_sta()
 
 void _network_ap()
 {
-    LOG_INFO("Listen on activation AP...")
+    LOG_INFO("Listen on activation AP...");
     String name = config_name_get();
     IPAddress apIP(192, 168, 1, 1);
     String ssid = "(inactive) " + name;
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
     WiFi.softAP(ssid.c_str());
-    PRINTSTATUS("SSID", ssid)
-    PRINTSTATUS("Web", "http://192.168.1.1/")
+    PRINTSTATUS("SSID", ssid);
+    PRINTSTATUS("Web", "http://192.168.1.1/");
 }
 
 void network_setup()

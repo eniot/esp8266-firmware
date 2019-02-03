@@ -14,6 +14,7 @@ struct config_mqtt_t
 };
 
 config_mqtt_t config_mqtt_get();
+void config_mqtt_get(config_mqtt_t *data);
 config_mqtt_t config_mqtt_default();
 void config_mqtt_set(config_mqtt_t data);
 void config_mqtt_save(config_mqtt_t data);

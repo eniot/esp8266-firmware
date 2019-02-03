@@ -9,6 +9,7 @@ struct config_access_t
 };
 
 config_access_t config_access_get();
+void config_access_get(config_access_t *data);
 config_access_t config_access_default();
 void config_access_set(config_access_t data);
 void config_access_save(config_access_t data);

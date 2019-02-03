@@ -12,13 +12,18 @@ bool config_mqtt_enabled()
 config_mqtt_t config_mqtt_get()
 {
     config_mqtt_t data;
-    data.mqtt = config_mqtt_enabled();
-    data.server = Data.readStr(_MQTT_SERVER_ADDR, _MQTT_SERVER_SIZE);
-    data.port = Data.read16(_MQTT_PORT_ADDR);
-    data.username = Data.readStr(_MQTT_USERNAME_ADDR, _MQTT_USERNAME_SIZE);
-    data.password = Data.readStr(_MQTT_PASSWORD_ADDR, _MQTT_PASSWORD_SIZE);
-    data.topic = Data.readStr(_MQTT_TOPIC_ADDR, _MQTT_TOPIC_SIZE);
+    config_mqtt_get(&data);
     return data;
+}
+
+void config_mqtt_get(config_mqtt_t *data)
+{
+    data->mqtt = config_mqtt_enabled();
+    data->server = Data.readStr(_MQTT_SERVER_ADDR, _MQTT_SERVER_SIZE);
+    data->port = Data.read16(_MQTT_PORT_ADDR);
+    data->username = Data.readStr(_MQTT_USERNAME_ADDR, _MQTT_USERNAME_SIZE);
+    data->password = Data.readStr(_MQTT_PASSWORD_ADDR, _MQTT_PASSWORD_SIZE);
+    data->topic = Data.readStr(_MQTT_TOPIC_ADDR, _MQTT_TOPIC_SIZE);
 }
 
 void config_mqtt_set(config_mqtt_t data)

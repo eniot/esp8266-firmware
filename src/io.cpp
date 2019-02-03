@@ -6,7 +6,7 @@
 
 String io_status()
 {
-    LOG_TRACE("io_status")
+    LOG_TRACE("io_status");
     config_io_t iodata = config_io_get();
     StaticJsonBuffer<400> jb;
     JsonArray &resp = jb.createArray();
@@ -38,7 +38,7 @@ String io_status()
 
 uint8_t io_fetch(ioindex_t pin)
 {
-    LOG_TRACE("io_fetch")
+    LOG_TRACE("io_fetch");
     config_gpio_t gpio = config_gpio_get(pin);
     uint8_t val = digitalRead(pin);
     if (gpio.invert)
@@ -48,7 +48,7 @@ uint8_t io_fetch(ioindex_t pin)
 
 bool io_update(ioindex_t pin, uint8_t val, bool persist)
 {
-    LOG_TRACE("io_update(pin,val)")
+    LOG_TRACE("io_update(pin,val)");
     config_gpio_t gpio = config_gpio_get(pin);
     if (gpio.func != IO_READONLY)
         return false;
@@ -69,7 +69,7 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist)
 
 bool io_update(String status)
 {
-    LOG_TRACE("io_update(status)")
+    LOG_TRACE("io_update(status)");
     StaticJsonBuffer<400> jb;
     JsonArray &jstat = jb.parseArray(status);
     if (!jstat.success())
@@ -112,7 +112,7 @@ void io_setup(ioindex_t pin)
     case IO_READWRITE:
     case IO_WRITEONLY:
         pinMode(pin, OUTPUT);
-        LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value)
+        LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value);
         io_update(pin, gpio.value);
     default:
         break;

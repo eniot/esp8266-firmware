@@ -20,6 +20,7 @@ struct config_network_t
 };
 
 config_network_t config_network_get();
+void config_network_get(config_network_t *data);
 config_network_t config_network_default();
 void config_network_set(config_network_t data);
 void config_network_save(config_network_t data);
