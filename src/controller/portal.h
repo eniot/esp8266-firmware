@@ -76,7 +76,7 @@ void portal_controller()
             data.gpio[i].toggle = _webserver.arg(String(i) + "_toggle") == "yes";
             String readpinStr = _webserver.arg(String(i) + "_readpin");
             readpinStr.trim();
-            data.gpio[i].readpin = readpinStr == "" ? -1 : readpinStr.toInt();
+            data.gpio[i].map = readpinStr == "" ? IO_MAP_NONE : readpinStr.toInt();
         }
         config_io_save(data);
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));

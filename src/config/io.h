@@ -14,7 +14,7 @@ struct config_gpio_t
     bool invert;
     bool persist;
     bool toggle;
-    ioindex_t readpin;
+    ioindex_t map;
 };
 
 struct config_io_t

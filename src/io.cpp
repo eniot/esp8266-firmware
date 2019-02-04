@@ -26,7 +26,7 @@ String io_status()
                 jobj["mode"] = "rw";
                 break;
             case IO_WRITEONLY:
-                jobj["mode"] = io_valid_pin(iodata.gpio[i].readpin) ? "rw" : "wo";
+                jobj["mode"] = io_valid_pin(iodata.gpio[i].map) ? "rw" : "wo";
                 break;
             }
         }
