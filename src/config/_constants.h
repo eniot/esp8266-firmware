@@ -1,6 +1,10 @@
 #ifndef app_config_constants_h
 #define app_config_constants_h
 
+#ifndef VERSION
+#define VERSION "0.0.0"
+#endif
+
 #define NO 0x01
 #define YES 0x02
 

@@ -8,6 +8,7 @@
 cmd_resp_t _cmd_execute_io(cmd_t cmd);
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd);
 cmd_resp_t _cmd_execute_network(cmd_t cmd);
+cmd_resp_t _cmd_execute_system(cmd_t cmd);
 
 cmd_resp_t _ok(String msg)
 {
@@ -33,6 +34,8 @@ cmd_resp_t cmd_execute(cmd_t cmd)
         return _cmd_execute_mqtt(cmd);
     if (cmd.domain.equalsIgnoreCase("network"))
         return _cmd_execute_network(cmd);
+    if (cmd.domain.equalsIgnoreCase("system"))
+        return _cmd_execute_system(cmd);
     return _err("invalid_domain");
 }
 
@@ -73,6 +76,15 @@ cmd_resp_t _cmd_execute_mqtt(cmd_t cmd)
         return _ok(mqtt_status());
 
     return _err("invalid_mqtt_command");
+}
+
+cmd_resp_t _cmd_execute_system(cmd_t cmd)
+{
+    LOG_TRACE("_cmd_execute_system");
+    if (cmd.cmd.equalsIgnoreCase("ver"))
+        return _ok(VERSION);
+
+    return _err("invalid_system_command");
 }
 
 cmd_resp_t _cmd_execute_network(cmd_t cmd)
