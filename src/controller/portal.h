@@ -63,25 +63,36 @@ void portal_controller()
             return _webserver.requestAuthentication();
         _webserver.send(200, "text/html", view_portal_io(config_io_get()));
     });
-    _webserver.on("/io", HTTP_POST, [] {
-        if (!_check_auth())
-            return _webserver.requestAuthentication();
-        config_io_t data;
-        for (size_t i = 0; i < _IO_COUNT; i++)
-        {
-            data.gpio[i].label = _webserver.arg(String(i) + "_label");
-            data.gpio[i].func = _webserver.arg(String(i) + "_func").toInt();
-            data.gpio[i].invert = _webserver.arg(String(i) + "_invert") == "yes";
-            data.gpio[i].persist = _webserver.arg(String(i) + "_persist") == "yes";
-            data.gpio[i].toggle = _webserver.arg(String(i) + "_toggle") == "yes";
-            String readpinStr = _webserver.arg(String(i) + "_readpin");
-            readpinStr.trim();
-            data.gpio[i].map = readpinStr == "" ? IO_MAP_NONE : readpinStr.toInt();
-        }
-        config_io_save(data);
-        _webserver.send(200, "text/html", view_portal_io(config_io_get()));
-        io_setup();
-    });
+    for (ioindex_t pin = 0; pin < _IO_COUNT; pin++)
+    {
+        char path[10];
+        sprintf(path, "/io/%d", pin);
+        _webserver.on(path, HTTP_GET, [] {
+            if (!_check_auth())
+                return _webserver.requestAuthentication();
+            _webserver.send(200, "text/html", view_portal_io(config_gpio_get(pin), pin));
+        });
+
+        _webserver.on(path, HTTP_POST, [] {
+            if (!_check_auth())
+                return _webserver.requestAuthentication();
+            config_io_t data;
+            for (size_t i = 0; i < _IO_COUNT; i++)
+            {
+                data.gpio[i].label = _webserver.arg(String(i) + "_label");
+                data.gpio[i].func = _webserver.arg(String(i) + "_func").toInt();
+                data.gpio[i].invert = _webserver.arg(String(i) + "_invert") == "yes";
+                data.gpio[i].persist = _webserver.arg(String(i) + "_persist") == "yes";
+                data.gpio[i].toggle = _webserver.arg(String(i) + "_toggle") == "yes";
+                String pinMap = _webserver.arg(String(i) + "_map");
+                pinMap.trim();
+                data.gpio[i].map = pinMap == "" ? IO_MAP_NONE : pinMap.toInt();
+            }
+            config_io_save(data);
+            _webserver.send(200, "text/html", view_portal_io(config_io_get()));
+            io_setup();
+        });
+    }
 }
 
 #endif

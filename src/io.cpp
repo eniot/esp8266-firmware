@@ -40,6 +40,10 @@ uint8_t io_fetch(ioindex_t pin)
 {
     LOG_TRACE("io_fetch");
     config_gpio_t gpio = config_gpio_get(pin);
+    if (io_valid_pin(gpio.map))
+    {
+        pin = gpio.map;
+    }
     uint8_t val = digitalRead(pin);
     if (gpio.invert)
         val = (val == HIGH) ? LOW : HIGH;
@@ -94,6 +98,7 @@ bool io_update(String status)
 
 void io_setup()
 {
+    LOG_TRACE("io_setup");
     config_io_t cfg = config_io_get();
     for (ioindex_t i = 0; i < _IO_COUNT; i++)
     {

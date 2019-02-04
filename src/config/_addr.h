@@ -81,23 +81,23 @@
 
 #define _IO_FUNC_SIZE 1
 #define _IO_FUNC_ADDR(ioindex) (_IO_ADDR + ioindex)
-#define _IO_FUNC_ADDR_END _IO_FUNC_ADDR(_IO_ENDPIN)
+#define _IO_FUNC_ADDR_END (_IO_FUNC_ADDR(_IO_ENDPIN) + _IO_FUNC_SIZE)
 
 #define _IO_FLAG_SIZE 1
 #define _IO_FLAG_ADDR(ioindex) (_IO_FUNC_ADDR_END + ioindex)
-#define _IO_FLAG_ADDR_END _IO_FLAG_ADDR(_IO_ENDPIN)
+#define _IO_FLAG_ADDR_END (_IO_FLAG_ADDR(_IO_ENDPIN) + _IO_FLAG_SIZE)
 
 #define _IO_VAL_SIZE 1
 #define _IO_VAL_ADDR(ioindex) (_IO_FLAG_ADDR_END + ioindex)
-#define _IO_VAL_ADDR_END _IO_VAL_ADDR(_IO_ENDPIN)
+#define _IO_VAL_ADDR_END (_IO_VAL_ADDR(_IO_ENDPIN) + _IO_VAL_SIZE)
 
 #define _IO_MAP_SIZE 1
 #define _IO_MAP_ADDR(ioindex) (_IO_VAL_ADDR_END + ioindex)
-#define _IO_MAP_ADDR_END _IO_MAP_ADDR(_IO_ENDPIN)
+#define _IO_MAP_ADDR_END (_IO_MAP_ADDR(_IO_ENDPIN) + _IO_MAP_SIZE)
 
 #define _IO_LABEL_SIZE 16
 #define _IO_LABEL_ADDR(ioindex) (_IO_MAP_ADDR_END + (ioindex * _IO_LABEL_SIZE))
-#define _IO_LABEL_ADDR_END _IO_LABEL_ADDR(_IO_ENDPIN)
+#define _IO_LABEL_ADDR_END (_IO_LABEL_ADDR(_IO_ENDPIN) + _IO_LABEL_SIZE)
 
 // END EEPROM
 #define _END_ADDR (_IO_ADDR + _IO_LABEL_ADDR_END)
