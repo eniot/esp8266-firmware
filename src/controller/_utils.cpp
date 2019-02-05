@@ -56,3 +56,24 @@ void _update_setup_from_web(config_setup_t *data)
     _update_network_from_web(data);
     _update_mqtt_from_web(data);
 }
+
+void _update_gpio_from_web(config_gpio_t *data)
+{
+    data->label = _webserver.arg("label");
+    data->func = _webserver.arg("func").toInt();
+    data->invert = _webserver.arg("invert") == "yes";
+    data->persist = _webserver.arg("persist") == "yes";
+    data->toggle = _webserver.arg("toggle") == "yes";
+    String pinMap = _webserver.arg("map");
+    pinMap.trim();
+    data->map = pinMap == "" ? IO_MAP_NONE : pinMap.toInt();
+}
+
+ioindex_t _fetch_iopin(String uri)
+{
+    char cpin[3];
+    sscanf(uri.c_str(), "/io/%s", cpin);
+    String spin(cpin);
+    spin.trim();
+    return spin.toInt();
+}
