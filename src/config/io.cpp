@@ -8,6 +8,7 @@ config_io_t *_io_cfg_cache = NULL;
 
 void config_io_set(config_io_t data)
 {
+    LOG_TRACE("config_io_set");
     for (ioindex_t i = 0; i < _IO_COUNT; i++)
         config_gpio_set(i, data.gpio[i]);
 }
@@ -20,7 +21,6 @@ void config_io_save(config_io_t data)
 
 void config_gpio_set(ioindex_t pin, config_gpio_t data)
 {
-    LOG_TRACE("config_gpio_set");
     config_gpio_t currVal = config_gpio_get(pin);
 
     if (currVal.func != data.func)

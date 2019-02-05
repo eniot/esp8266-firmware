@@ -84,12 +84,18 @@ String html_head(String title)
         font-size: 14px;
     	font-family: system-ui;
     }
+    a {
+        text-decoration: none;
+        color: #0078e7;
+    }
+    .mute { color: #999; }
+    .active { font-weight: 600; }
     .row {
      	display: flex;
         margin: 5px;
         flex-flow: column;
     }
-    button, .label, .value, label, .radios, input[type="text"],  input[type="password"], input[type="number"] {
+    button, .label, .value, label, .radios, input[type="text"],  input[type="password"], input[type="number"], select {
         padding: 10px;
         font-size: 14px;
         width: 100%;
@@ -117,8 +123,6 @@ String html_head(String title)
     }
     .menu li a {
         padding: 10px;
-        text-decoration: none;
-        color: #0078e7;
     }
     .menu li a:hover, .menu li.active a {
         text-decoration: none;
@@ -164,32 +168,56 @@ String html_head(String title)
 )====";
 }
 
+String html_row(String content)
+{
+    return "<div class='row'>" + content + "</div>";
+}
+
+String html_row_with_label(String label, String content)
+{
+    return html_row("<label>" + label + "</label>" + content);
+}
+
 String html_field(String type, String name, String label, String value, String className, bool required)
 {
     String reqStr = required ? "required" : "";
-    return "<div class=\"row\"><label>" + label + "</label>" +
-           "<input class=\"" + className + "\" " + reqStr + " type=\"" + type + "\" name=\"" + name + "\" placeholder=\"" + label + "\" value=\"" + value + "\" />" +
-           "</div>";
+    String content = "<input class=\"" + className + "\" " + reqStr + " type=\"" + type + "\" name=\"" + name + "\" placeholder=\"" + label + "\" value=\"" + value + "\" />";
+    return html_row_with_label(label, content);
 }
 
 String html_radios(String name, String label, String values[], String displays[], size_t valCount, String value)
 {
-    String content = "<div class=\"row\"><label>" + label + "</label>" +
-                     "<div class=\"radios\">";
-
+    String content = "<div class=\"radios\">";
     for (size_t i = 0; i < valCount; i++)
     {
         String checked = value == values[i] ? "checked" : "";
         content += "<input type=\"radio\" name=\"" + name + "\" value=\"" + values[i] + "\" " + checked + "> &nbsp;" + displays[i] + " &nbsp;";
     }
+    content += "</div>";
+    return html_row_with_label(label, content);
+}
 
-    content += "</div></div>";
-    return content;
+String html_select_option(String value, String display, bool selected)
+{
+    return "<option value='" + value + "' " + (selected ? "selected" : "") + ">" + display + "</option>";
+}
+
+String html_select(String name, String label, String options) 
+{
+    return html_row_with_label(label, "<select name='" + name + "'>" + options + "</select>");
+}
+
+String html_select(String name, String label, String values[], String displays[], size_t valCount, String value)
+{
+    String options = "";
+    for (size_t i = 0; i < valCount; i++)    
+        options += html_select_option(values[i], displays[i], value == values[i]);    
+    return html_select(name, label, options);
 }
 
 String html_button(String text, String type)
 {
-    return "<div class=\"row\"><label></label><button type=\"" + type + "\">" + text + "</button></div>";
+    return html_row_with_label("", "<button type='" + type + "'>" + text + "</button>");
 }
 
 String html_menu(html_menu_t items[], size_t size, String active)
@@ -207,6 +235,6 @@ String html_menu(html_menu_t items[], size_t size, String active)
 String html_display(String name, String value, String color)
 {
     char content[400];
-    sprintf(content, "<div class='row'><span class='label'>%s</span><strong class='value' style='color:%s'>%s</strong></div>", name.c_str(), color.c_str(), value.c_str());
-    return String(content);
+    sprintf(content, "<strong class='value' style='color:%s'>%s</strong>", color.c_str(), value.c_str());
+    return html_row_with_label(name, String(content));
 }

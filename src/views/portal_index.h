@@ -21,7 +21,7 @@ String view_portal_index()
         config_gpio_t gpio = config_gpio_get(pin);
         if (gpio.func == IO_UNUSED)
             continue;
-        String disabled = (gpio.func == IO_READONLY) ? "" : "disabled";
+        String disabled = (gpio.func == IO_READONLY) ? "disabled": "";
 
         String className = io_fetch(pin) == HIGH ? "on" : "off";
         content += "<form method='POST'><input type='hidden' name='io_pin' value='";
