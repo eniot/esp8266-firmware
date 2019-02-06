@@ -4,11 +4,11 @@
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 
-config_activation_t _cfg_network;
+config_network_t _cfg_network;
 
 void _network_sta()
 {
-    _cfg_network = config_activation_log();
+    _cfg_network = config_network_get();
 
     if (WiFi.status() == WL_CONNECTED)
         WiFi.disconnect();
@@ -39,20 +39,20 @@ void _network_sta()
 
 void _network_ap()
 {
-    LOG_INFO("Listen on activation AP...")
+    LOG_INFO("Listen on activation AP...");
     String name = config_name_get();
     IPAddress apIP(192, 168, 1, 1);
     String ssid = "(inactive) " + name;
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
     WiFi.softAP(ssid.c_str());
-    PRINTSTATUS("SSID", ssid)
-    PRINTSTATUS("Web", "http://192.168.1.1/")
+    PRINTSTATUS("SSID", ssid);
+    PRINTSTATUS("Web", "http://192.168.1.1/");
 }
 
 void network_setup()
 {
-    return config_activated() ? _network_sta() : _network_ap();
+    return config_setup_complete() ? _network_sta() : _network_ap();
 }
 
 void network_execute()

@@ -2,11 +2,13 @@
 #include "config/io.h"
 #include "config/_addr.h"
 #include "config/_constants.h"
+#include "Logger.h"
 
 config_io_t *_io_cfg_cache = NULL;
 
 void config_io_set(config_io_t data)
 {
+    LOG_TRACE("config_io_set");
     for (ioindex_t i = 0; i < _IO_COUNT; i++)
         config_gpio_set(i, data.gpio[i]);
 }
@@ -20,27 +22,27 @@ void config_io_save(config_io_t data)
 void config_gpio_set(ioindex_t pin, config_gpio_t data)
 {
     config_gpio_t currVal = config_gpio_get(pin);
-    unsigned int addr = _GPIO_ADDR(pin);
 
     if (currVal.func != data.func)
-        Data.write(addr, data.func);
+        Data.write(_IO_FUNC_ADDR(pin), data.func);
 
-    addr += _IO_FUNC_SIZE;
-    
+    if (currVal.map != data.map)
+        Data.write(_IO_MAP_ADDR(pin), data.map);
+
     uint8_t flags = 0b00000000;
-    if (data.invert) flags |= IO_FLG_INVERT;
-    if (data.persist) flags |= IO_FLG_PERSIST;
-    Data.write(addr, flags);
-
-    addr += _IO_FLAG_SIZE;
+    if (data.invert)
+        flags |= IO_FLG_INVERT;
+    if (data.persist)
+        flags |= IO_FLG_PERSIST;
+    if (data.toggle)
+        flags |= IO_FLG_TOGGLE;
+    Data.write(_IO_FLAG_ADDR(pin), flags);
 
     if (currVal.value != data.value)
-        Data.write(addr, data.value);
-
-    addr += _IO_VAL_SIZE;
+        Data.write(_IO_VAL_ADDR(pin), data.value);
 
     if (currVal.label != data.label)
-        Data.writeStr(addr, data.label);
+        Data.writeStr(_IO_LABEL_ADDR(pin), data.label);
 }
 
 void config_gpio_save(ioindex_t pin, config_gpio_t data)
@@ -55,22 +57,17 @@ config_io_t config_io_get()
         return *_io_cfg_cache;
 
     config_io_t data;
-    unsigned int addr = _IO_ADDR;
     for (size_t i = 0; i < _IO_COUNT; i++)
     {
-        data.gpio[i].func = Data.read(addr);
-        addr += _IO_FUNC_SIZE;
-        
-        uint8_t flags = Data.read(addr);
+        uint8_t flags = Data.read(_IO_FLAG_ADDR(i));
         data.gpio[i].invert = (flags & IO_FLG_INVERT) == IO_FLG_INVERT;
         data.gpio[i].persist = (flags & IO_FLG_PERSIST) == IO_FLG_PERSIST;
-        addr += _IO_FLAG_SIZE;
-        
-        data.gpio[i].value = Data.read(addr);
-        addr += _IO_VAL_SIZE;
-        
-        data.gpio[i].label = Data.readStr(addr, _IO_LABEL_SIZE);
-        addr += _IO_LABEL_SIZE;
+        data.gpio[i].toggle = (flags & IO_FLG_TOGGLE) == IO_FLG_TOGGLE;
+
+        data.gpio[i].func = Data.read(_IO_FUNC_ADDR(i));
+        data.gpio[i].value = Data.read(_IO_VAL_ADDR(i));
+        data.gpio[i].map = Data.read(_IO_MAP_ADDR(i));
+        data.gpio[i].label = Data.readStr(_IO_LABEL_ADDR(i), _IO_LABEL_SIZE);
     }
     return data;
 }
@@ -102,6 +99,8 @@ config_io_t config_io_default()
         odata.gpio[i].func = IO_UNUSED;
         odata.gpio[i].invert = false;
         odata.gpio[i].persist = false;
+        odata.gpio[i].toggle = false;
+        odata.gpio[i].map = IO_MAP_NONE;
         odata.gpio[i].value = LOW;
         char labelBuff[7];
         sprintf(labelBuff, "GPIO%d", i);

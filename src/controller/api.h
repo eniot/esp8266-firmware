@@ -20,6 +20,9 @@ void api_controller()
     _webserver.on("/api/io", HTTP_GET, [] {
         _webserver.send(200, "application/json", io_status());
     });
+    _webserver.addHandler(new StartUriRequestHandler("/api/io/", HTTP_GET, [](HTTPMethod method, String uri) {
+        _webserver.send(200, "application/json", io_status());
+    }));
 }
 
 #endif

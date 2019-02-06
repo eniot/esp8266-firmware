@@ -3,7 +3,7 @@
 
 #include "config/_addr.h"
 #include "config/_constants.h"
-#include "config/activation.h"
+#include "config/setup.h"
 #include "config/network.h"
 #include "config/access.h"
 #include "config/mqtt.h"

@@ -6,12 +6,17 @@ config_access_t *_access_cache = NULL;
 
 config_access_t config_access_get()
 {
-    if(_access_cache != NULL)
-        return *_access_cache;
-
     config_access_t data;
-    data.access = Data.readStr(_ACCESS_PASSWORD_ADDR, _ACCESS_PASSWORD_SIZE);
+    config_access_get(&data);
     return data;
+}
+
+void config_access_get(config_access_t *data)
+{
+    if (_access_cache != NULL)
+        data->access = _access_cache->access;
+    else
+        data->access = Data.readStr(_ACCESS_PASSWORD_ADDR, _ACCESS_PASSWORD_SIZE);
 }
 
 void config_access_set(config_access_t data)
@@ -26,7 +31,7 @@ void config_access_save(config_access_t data)
     _access_cache = NULL;
 }
 
-config_access_t config_access_default() 
+config_access_t config_access_default()
 {
     config_access_t adata;
     adata.access = "";

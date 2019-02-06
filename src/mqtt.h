@@ -2,6 +2,7 @@
 #define app_mqtt_h
 
 #include <WString.h>
+#include <PubSubClient.h>
 
 #define MQTT_ACK "ack"
 #define MQTT_ACK_INIT "init"
