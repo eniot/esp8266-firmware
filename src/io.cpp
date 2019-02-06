@@ -139,7 +139,7 @@ bool io_toggle(ioindex_t pin, bool publish)
     int8_t val = io_fetch(pin);
     int8_t tval = val == HIGH ? LOW : HIGH;
     LOG_TRACE("val:" + String(val) + ", tval:" + String(tval));
-    return io_update(pin, tval, true);
+    return io_update(pin, tval, true, publish);
 }
 
 bool io_valid_pin(ioindex_t pin)
