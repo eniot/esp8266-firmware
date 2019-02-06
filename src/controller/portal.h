@@ -22,7 +22,7 @@ void portal_controller()
         if (!_check_auth())
             return _webserver.requestAuthentication();
         ioindex_t pin = _webserver.arg("io_pin").toInt();
-        io_toggle(pin);
+        io_toggle(pin, true);
         _webserver.send(200, "text/html", view_portal_index());
     });
     _webserver.on("/setup", HTTP_GET, setup_get_handler);
