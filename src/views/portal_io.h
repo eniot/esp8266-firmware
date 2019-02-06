@@ -48,14 +48,14 @@ String view_portal_io(config_io_t data)
             if (data.gpio[i].invert)
                 rowContent += "<li>Inverted</li>";
             if (data.gpio[i].persist)
-                rowContent += "<li>Persisted</li>";
+                rowContent += "<li>Persisted, value: " + String(data.gpio[i].value) + "</li>";
             if (data.gpio[i].toggle)
                 rowContent += "<li>Toggle Mode</li>";
             if (io_valid_pin(data.gpio[i].map))
                 rowContent += "<li>Mapped to " + _io_display(data.gpio[data.gpio[i].map].label, data.gpio[i].map) + "</li>";
             rowContent += "</ul>";
         }
-        String className = (data.gpio[i].func == IO_UNUSED)? "" : "active";
+        String className = (data.gpio[i].func == IO_UNUSED) ? "" : "active";
         String labelContent = "<a class='" + className + "' href='/io/" + String(i) + "'>" + _io_display(data.gpio[i].label, i) + "</a><br/>";
         switch (data.gpio[i].func)
         {
@@ -69,7 +69,7 @@ String view_portal_io(config_io_t data)
             labelContent += "Write Only";
             break;
         }
-        content += html_row_with_label(labelContent, rowContent);
+        content += html_row(labelContent, rowContent);
     }
     content += "</div></body></html>";
     return content;
@@ -77,7 +77,7 @@ String view_portal_io(config_io_t data)
 
 String view_portal_io(config_gpio_t data, ioindex_t pin)
 {
-    _io_map_options = html_select_option("100", "Unmapped", data.map == 100) ;
+    _io_map_options = html_select_option("100", "Unmapped", data.map == 100);
     config_io_t iodata = config_io_get();
     for (ioindex_t i = 0; i < _IO_COUNT; i++)
         _io_map_options += html_select_option(String(i), _io_display(iodata.gpio[i].label, i), data.map == i);

@@ -45,6 +45,7 @@ uint8_t io_fetch(ioindex_t pin)
         pin = gpio.map;
     }
     uint8_t val = digitalRead(pin);
+    LOGF_TRACE("digitalRead(%d):%d", pin, val);
     if (gpio.invert)
         val = (val == HIGH) ? LOW : HIGH;
     return val;
@@ -52,14 +53,15 @@ uint8_t io_fetch(ioindex_t pin)
 
 bool io_update(ioindex_t pin, uint8_t val, bool persist)
 {
-    LOG_TRACE("io_update(pin,val)");
+    LOGF_TRACE("io_update(%d,%d,%d)", pin, val, persist);
     config_gpio_t gpio = config_gpio_get(pin);
-    if (gpio.func != IO_READONLY)
+    if (gpio.func == IO_READONLY)
         return false;
     if (gpio.toggle)
         val = HIGH;
     if (gpio.invert)
         val = (val == HIGH) ? LOW : HIGH;
+    LOGF_TRACE("digitalWrite(%d,%d)", pin, val);
     digitalWrite(pin, val);
     if (gpio.persist)
     {
@@ -117,8 +119,11 @@ void io_setup(ioindex_t pin)
     case IO_READWRITE:
     case IO_WRITEONLY:
         pinMode(pin, OUTPUT);
-        LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value);
-        io_update(pin, gpio.value);
+        if (gpio.persist)
+        {
+            LOGF_TRACE("Set GPIO%d to %d", pin, gpio.value);
+            io_update(pin, gpio.value);
+        }
     default:
         break;
     }
@@ -126,7 +131,10 @@ void io_setup(ioindex_t pin)
 
 bool io_toggle(ioindex_t pin)
 {
-    int8_t tval = io_fetch(pin) == HIGH ? LOW : HIGH;
+    LOG_TRACE("io_toggle(" + String(pin) + ")");
+    int8_t val = io_fetch(pin);
+    int8_t tval = val == HIGH ? LOW : HIGH;
+    LOG_TRACE("val:" + String(val) + ", tval:" + String(tval));
     return io_update(pin, tval, true);
 }
 

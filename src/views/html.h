@@ -7,6 +7,7 @@
 String html_meta(String content);
 String html_head(String title);
 String html_row(String content);
+String html_row(String col1, String col2);
 String html_row_with_label(String label, String content);
 String html_field(String type, String name, String label, String value = "", String className = "", bool required = true);
 String html_radios(String name, String label, String values[], String displays[], size_t valCount, String value = "");
