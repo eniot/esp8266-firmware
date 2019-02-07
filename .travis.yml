@@ -9,7 +9,7 @@ install:
   - pip install -U platformio
   - platformio update
 script:
-  - platformio run -e release -e release_512k
+  - platformio run -e release -e release_512
   - mv .pioenvs/release_512/firmware.bin .pioenvs/release/firmware_512k.bin
 deploy:
   provider: releases
