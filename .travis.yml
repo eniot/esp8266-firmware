@@ -10,3 +10,10 @@ install:
   - platformio update
 script:
   - platformio run -e esp12e -e esp01 -e esp01s
+deploy:
+  provider: releases
+  api_key: "$GITHUB_OAUTH_TOKEN"
+  file: ".pioenvs/esp01s/firmware.bin"
+  skip_cleanup: true
+  on:
+    tags: true
