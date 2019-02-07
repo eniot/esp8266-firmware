@@ -9,4 +9,17 @@ install:
   - pip install -U platformio
   - platformio update
 script:
-  - platformio run
+  - platformio run -e esp12e -e esp01 -e esp01s
+  - mv .pioenvs/esp01s/firmware.bin .pioenvs/firmware-esp01s.bin
+  - mv .pioenvs/esp12e/firmware.bin .pioenvs/firmware-esp12e.bin
+  - mv .pioenvs/esp01/firmware.bin .pioenvs/firmware-esp01.bin
+deploy:
+  provider: releases
+  api_key: "$GITHUB_OAUTH_TOKEN"
+  file: 
+    - .pioenvs/firmware-esp01s.bin
+    - .pioenvs/firmware-esp12e.bin
+    - .pioenvs/firmware-esp01.bin
+  skip_cleanup: true
+  on:
+    tags: true
