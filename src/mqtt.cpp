@@ -109,7 +109,6 @@ void _callback(char *topic, byte *payload, size_t length)
     PRINTSTATUS("Command", cmd.cmd);
     PRINTSTATUS("Parameter", cmd.param);
     cmd_resp_t resp = cmd_execute(cmd);
-
     String topicsuffix = cmd.domain;
     if (cmd.prop != "")
         topicsuffix += String("/") + cmd.prop;
@@ -118,6 +117,12 @@ void _callback(char *topic, byte *payload, size_t length)
     if (!succeed)
     {
         LOG_ERROR("MQTT failed to send message");
+    }
+    switch (resp.action)
+    {
+    case CMD_RESP_ACTION_RESTART:
+        ESP.restart();
+        break;
     }
 }
 
