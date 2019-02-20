@@ -87,22 +87,41 @@ cmd_resp_t _cmd_execute_system(cmd_t cmd)
         return _ok(VERSION);
     if (cmd.cmd.equalsIgnoreCase("update"))
     {
+        String fingerprint = "CA 06 F5 6B 25 8B 7A 0D 4F 2B 05 47 09 39 47 86 51 15 19 84";
+        char host[50] = "github.com";
         char url[100];
-        sprintf(url, "https://github.com/eniot/esp8266-firmware/releases/download/%s/firmware.bin", cmd.param.c_str());
-        t_httpUpdate_return ret = ESPhttpUpdate.update(url, VERSION, "CA 06 F5 6B 25 8B 7A 0D 4F 2B 05 47 09 39 47 86 51 15 19 84");
-        switch (ret)
+        sprintf(url, "/eniot/esp8266-firmware/releases/download/%s/firmware.bin", cmd.param.c_str());
+
+        WiFiClientSecure client;
+        client.verify(fingerprint.c_str(), host);
+        if (client.connect(host, 443))
         {
-        case HTTP_UPDATE_FAILED:
-            LOG_ERROR(ESPhttpUpdate.getLastErrorString());
-            return _err(String("update_failed:") + ESPhttpUpdate.getLastErrorString());
+            client.print(String("GET ") + String(url) + " HTTP/1.1\r\n" +
+                         "Host: " + String(host) + " \r\n" +
+                         "User-Agent: Eniot\r\n" +
+                         "Connection: close\r\n\r\n");
+            while (client.connected())
+            {
+                String line = client.readStringUntil('\n');
+                if (line.startsWith("Location: "))
+                {
+                    t_httpUpdate_return ret = ESPhttpUpdate.update(line.substring(10), VERSION, fingerprint);
+                    switch (ret)
+                    {
+                    case HTTP_UPDATE_FAILED:
+                        LOG_ERROR(ESPhttpUpdate.getLastErrorString());
+                        return _err(String("update_failed:") + ESPhttpUpdate.getLastErrorString());
 
-        case HTTP_UPDATE_NO_UPDATES:
-            LOG_WARN("No updates");
-            return _err("update_not_found");
+                    case HTTP_UPDATE_NO_UPDATES:
+                        LOG_WARN("No updates");
+                        return _err("update_not_found");
 
-        case HTTP_UPDATE_OK:
-            LOG_INFO("Firmware updated, rebooting");
-            return _ok("updated", CMD_RESP_ACTION_RESTART);
+                    case HTTP_UPDATE_OK:
+                        LOG_INFO("Firmware updated, rebooting");
+                        return _ok("updated", CMD_RESP_ACTION_RESTART);
+                    }                    
+                }
+            }
         }
         return _err("update_unknown");
     }
