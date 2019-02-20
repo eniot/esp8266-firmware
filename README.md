@@ -4,7 +4,7 @@ ESP8266 Firmware which supports
 
 - Web based configuration
 
-- MQTT based operation
+- MQTT based operation and status updates
 
-- Web API for status updates
+- Web interface with REST API for configurations
 
