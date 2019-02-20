@@ -1,6 +1,6 @@
 # eniot | ESP8266 Firmware
 
-ESP8266 Firmware which supports
+Simple yet powerful ESP8266 Firmware which supports
 
 - Web based configuration
 
