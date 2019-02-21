@@ -4,6 +4,7 @@
 #include "network.h"
 #include "io.h"
 #include <Logger.h>
+#include <ESP8266httpUpdate.h>
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd);
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd);
@@ -84,6 +85,26 @@ cmd_resp_t _cmd_execute_system(cmd_t cmd)
     LOG_TRACE("_cmd_execute_system");
     if (cmd.cmd.equalsIgnoreCase("ver"))
         return _ok(VERSION);
+    if (cmd.cmd.equalsIgnoreCase("update"))
+    {
+        WiFiClient client;
+        t_httpUpdate_return ret = ESPhttpUpdate.update(client, cmd.param, VERSION);
+        switch (ret)
+        {
+        case HTTP_UPDATE_FAILED:
+            LOG_ERROR(ESPhttpUpdate.getLastErrorString());
+            return _err(String("update_failed:") + ESPhttpUpdate.getLastErrorString());
+
+        case HTTP_UPDATE_NO_UPDATES:
+            LOG_WARN("No updates");
+            return _err("update_not_found");
+
+        case HTTP_UPDATE_OK:
+            LOG_INFO("Firmware updated, rebooting");
+            return _ok("updated", CMD_RESP_ACTION_RESTART);
+        }
+        return _err("update_unknown");
+    }
     return _err("invalid_system_command");
 }
 
