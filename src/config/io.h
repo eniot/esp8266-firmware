@@ -4,7 +4,7 @@
 #include <WString.h>
 #include "config/_addr.h"
 
-typedef unsigned int ioindex_t;
+typedef int8_t ioindex_t;
 
 struct config_gpio_t
 {

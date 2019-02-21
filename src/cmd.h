@@ -11,9 +11,13 @@ struct cmd_t
     String cmd;
 };
 
+#define CMD_RESP_ACTION_NONE 0x00
+#define CMD_RESP_ACTION_RESTART 0x01
+
 struct cmd_resp_t
 {
     bool success;
+    uint8_t action;
     String msg;
 };
 

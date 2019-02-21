@@ -7,13 +7,20 @@
 #include "config.h"
 #include "mqtt.h"
 #include "network.h"
+#include <ESP8266HTTPUpdateServer.h>
 
 ESP8266WebServer _webserver(80);
+ESP8266HTTPUpdateServer _httpUpdater;
 
 void webserver_setup()
 {
     if (config_setup_complete())
+    {
         portal_controller();
+        String password = config_access_get().access;
+        password.trim();
+        _httpUpdater.setup(&_webserver, "/ota", "admin", password);
+    }
     else
         setup_controller();
 
