@@ -5,6 +5,7 @@
 #include "network.h"
 #include "views/portal_index.h"
 #include "views/portal_io.h"
+#include "views/portal_other.h"
 #include "controller/setup.h"
 #include "controller/_utils.h"
 #include "webserver.h"
@@ -86,6 +87,11 @@ void portal_controller()
         _webserver.send(200, "text/html", view_portal_io(config_gpio_get(pin), pin));
         io_setup();
     }));
+    _webserver.on("/other", HTTP_GET, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
+        _webserver.send(200, "text/html", view_portal_other());
+    });
 }
 
 #endif
