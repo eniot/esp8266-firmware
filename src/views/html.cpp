@@ -8,26 +8,18 @@ String html_meta(String content)
 
 String html_script()
 {
-    return 
-R"==(
-<script>
-let _n = document.getElementsByName, _c = document.getElementsByClassName, _i = document.getElementById, rdns = _n('dns'), rdhcp = _n('dhcp'), rmqtt = _n('mqtt'),
-_change = (n, v) => {
-    const i = _c(`${n}-input`);
-    for (let j = 0; j < i.length; j++) i[j].disabled = v === '0';
-    _i(`${n}-section`).style.display = v === '0' ? 'none' : 'block';
-},
-mqttChange = v => _change("mqtt", v),
-dnsChange = v => _change("dns", v),
-dhcpChange = v => { _change("dhcp", v);
-    if (v === '0') {
-        for (var j = 0, l = rdns.length; j < l; j++) rdns[j].checked = rdns[j].value === '1';        
-        dnsChange("1");
-    }
+    return R"==(<script>
+_change = (n, v, iv) => {
+    let i = document.getElementsByClassName(`${n}-input`);
+    v = v === (iv ? "1" : "0");
+    for (let j = 0; j < i.length; j++) i[j].disabled = v;
+    document.getElementById(`${n}-section`).style.display = v ? 'none' : 'block';
 };
-rdns.forEach(e => e.addEventListener("change", () => dnsChange(this.value)));
-rdhcp.forEach(e => e.addEventListener("change", () => dhcpChange(this.value)));
-rmqtt.forEach(e => e.addEventListener("change", () => mqttChange(this.value)));
+mqttChange = v => _change("mqtt", v), dnsChange = v => _change("dns", v), dhcpChange = v => _change("dhcp", v, true); 
+_n = n => document.getElementsByName(n);
+_n('dns').forEach(e => e.addEventListener("change", () => dnsChange(e.value)));
+_n('dhcp').forEach(e => e.addEventListener("change", () => dhcpChange(e.value)));
+_n('mqtt').forEach(e => e.addEventListener("change", () => mqttChange(e.value)));
 </script>)==";
 }
 
