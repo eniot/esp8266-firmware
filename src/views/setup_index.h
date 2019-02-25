@@ -14,7 +14,7 @@ String view_setup_index_content(config_setup_t data, String actionTitle)
 
     String enable_values[2] = {"1", "0"};
     String enable_displays[2] = {"Yes", "No"};
-    return "<form method=\"POST\" action=\"/\">" +
+    return "<form method=\"POST\" action=\"/api/setup\">" +
            html_display("Username", "admin") +
            html_field("text", "access", "Password", data.access) +
            "<br/>" +
