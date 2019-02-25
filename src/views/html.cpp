@@ -8,66 +8,27 @@ String html_meta(String content)
 
 String html_script()
 {
-    return R"====(
-<script> 
-    const dnsRadios = document.getElementsByName('dns');
-    const dhcpRadios = document.getElementsByName('dhcp');
-    const mqttRadios = document.getElementsByName('mqtt');
-    function mqttChange(value)
-    {
-        const inputs = document.getElementsByClassName('mqtt-input');
-        for (var j = 0; j < inputs.length; j++)
-        {
-            inputs[j].disabled = value === '0';
-        }
-        document.getElementById('mqtt-section').style.display = value === '0' ? 'none' : 'block';
-    }    
-    function dnsChange(value)
-    {
-        const inputs = document.getElementsByClassName('dns-input');
-        for (var j = 0; j < inputs.length; j++)
-        {
-            inputs[j].disabled = value === '0';
-        }
-        document.getElementById('dns-section').style.display = value === '0' ? 'none' : 'block';
+    return 
+R"==(
+<script>
+let _n = document.getElementsByName, _c = document.getElementsByClassName, _i = document.getElementById, rdns = _n('dns'), rdhcp = _n('dhcp'), rmqtt = _n('mqtt'),
+_change = (n, v) => {
+    const i = _c(`${n}-input`);
+    for (let j = 0; j < i.length; j++) i[j].disabled = v === '0';
+    _i(`${n}-section`).style.display = v === '0' ? 'none' : 'block';
+},
+mqttChange = v => _change("mqtt", v),
+dnsChange = v => _change("dns", v),
+dhcpChange = v => { _change("dhcp", v);
+    if (v === '0') {
+        for (var j = 0, l = rdns.length; j < l; j++) rdns[j].checked = rdns[j].value === '1';        
+        dnsChange("1");
     }
-    function dhcpChange(value)
-    {
-        const inputs = document.getElementsByClassName('dchp-input');
-        for (var j = 0; j < inputs.length; j++)
-        {
-            inputs[j].disabled = value === '1';
-        }
-        if (value === '0')
-        {
-            for (var j = 0, length = dnsRadios.length; j < length; j++)
-            {
-                dnsRadios[j].checked = dnsRadios[j].value === '1';
-            }
-            dnsChange("1");
-        }
-        document.getElementById('dhcp-section').style.display = value === '1' ? 'none' : 'block';
-    }
-    for (var i = 0, length = dnsRadios.length; i < length; i++)
-    {
-        dnsRadios[i].addEventListener('change', function() {
-            dnsChange(this.value);
-        });
-    }
-    for (var i = 0, length = dhcpRadios.length; i < length; i++)
-    {
-        dhcpRadios[i].addEventListener('change', function() {
-            dhcpChange(this.value);
-        });
-    }
-    for (var i = 0, length = mqttRadios.length; i < length; i++)
-    {
-        mqttRadios[i].addEventListener('change', function() {
-            mqttChange(this.value);
-        });
-    }
-</script>
-           )====";
+};
+rdns.forEach(e => e.addEventListener("change", () => dnsChange(this.value)));
+rdhcp.forEach(e => e.addEventListener("change", () => dhcpChange(this.value)));
+rmqtt.forEach(e => e.addEventListener("change", () => mqttChange(this.value)));
+</script>)==";
 }
 
 String html_head(String title)
@@ -76,103 +37,7 @@ String html_head(String title)
            html_meta("charset='utf-8'") +
            html_meta("http-equiv='X-UA-Compatible' content='IE=edge'") +
            html_meta("name='viewport' content='width=device-width, initial-scale=1'") +
-           "<title>" + title + "</title>" +
-           R"====(
-<style>
-    body {
-    	margin: 30px;
-        font-size: 14px;
-    	font-family: system-ui;
-    }
-    a {
-        text-decoration: none;
-        color: #0078e7;
-    }
-    .mute { color: #999; }
-    .active { font-weight: 600; }
-    .row {
-     	display: flex;
-        margin: 5px;
-        flex-flow: column;
-    }
-    .col {
-        width: 100%;
-    }
-    .block {
-        padding: 10px;
-        font-size: 14px;
-        width: 100%;
-        display: block;
-    }
-    select {
-        -webkit-appearance: none;
-    }
-    label, .label {
-    	margin-right: 20px;
-        padding: 10px 0px;
-    }
-    .btn{
-    	background-color: #0078e7;
-    	color: white;
-    	border: 0px;
-        font-size: 16px;
-    	margin: 10px auto;
-    }
-    .menu {
-        list-style: none;
-        padding: 0px;
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 30px;
-    }
-    .menu li {
-        display: inline-block;
-    }
-    .menu li a {
-        padding: 10px;
-    }
-    .menu li a:hover, .menu li.active a {
-        text-decoration: none;
-        border-bottom: 1px solid #0078e7;
-    }
-    @media only screen and (min-width: 600px) {
-        .row {
-            flex-flow: row;
-        }
-        .col {
-            width: 50%;
-        }
-    }
-    @media only screen and (min-width: 768px) {
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-    }
-    .home-io {
-        display: flex;
-        justify-content: flex-end;
-    }
-    .home-io form {
-        margin: 0px;
-    }
-    .home-io form button {
-        width: 80px;
-        height: 150;
-        margin: 10px;
-        border-radius: 54px;
-        color: #0078e7;
-        background-color: transparent;
-        border: 1px solid #0078e7;
-    }
-    .home-io form button.btn-on {
-        background-color: #0078e7;
-        color: white;
-        border: white;
-    }
-</style>
-</head>
-)====";
+           "<title>" + title + "</title><style>body{margin:30px;font-size:14px;font-family:system-ui}a{text-decoration:none;color:#0078e7}.mute{color:#999}.active{font-weight:600}.row{display:flex;margin:5px;flex-flow:column}.col{width:100%}.block{padding:10px;font-size:14px;width:100%;display:block}select{-webkit-appearance:none}label,.label{margin-right:20px;padding:10px 0}.btn{background-color:#0078e7;color:white;border:0;font-size:16px;margin:10px auto}.menu{list-style:none;padding:0;display:flex;justify-content:flex-end;margin-bottom:30px}.menu li{display:inline-block}.menu li a{padding:10px}.menu li a:hover,.menu li.active a{text-decoration:none;border-bottom:1px solid #0078e7}@media only screen and (min-width:600px){.row{flex-flow:row}.col{width:50%}}@media only screen and (min-width:768px){.container{max-width:800px;margin:auto}}.home-io{display:flex;justify-content:flex-end}.home-io form{margin:0}.home-io form button{width:80px;height:150;margin:10px;border-radius:54px;color:#0078e7;background-color:transparent;border:1px solid #0078e7}.home-io form button.btn-on{background-color:#0078e7;color:white;border:white}</style></head>";
 }
 
 String html_row(String content)

@@ -1,5 +1,4 @@
 #include "webserver.h"
-#include "views/setup_index.h"
 #include "controller/portal.h"
 #include "controller/setup.h"
 #include "controller/api.h"
@@ -7,22 +6,31 @@
 #include "config.h"
 #include "mqtt.h"
 #include "network.h"
-#include <ESP8266HTTPUpdateServer.h>
 
 ESP8266WebServer _webserver(80);
+
+#ifndef OTA_ENABLED
+#define _setup_ota_server() 
+#else
+#include <ESP8266HTTPUpdateServer.h>
 ESP8266HTTPUpdateServer _httpUpdater;
+void _setup_ota_server() 
+{
+    String password = config_access_get().access;
+    password.trim();
+    _httpUpdater.setup(&_webserver, "/ota", "admin", password);
+}
+#endif
 
 void webserver_setup()
 {
     if (config_setup_complete())
     {
         portal_controller();
-        String password = config_access_get().access;
-        password.trim();
-        _httpUpdater.setup(&_webserver, "/ota", "admin", password);
+        _setup_ota_server();
     }
     else
-        setup_controller();
+        setup_controller();    
 
     api_controller();
 
