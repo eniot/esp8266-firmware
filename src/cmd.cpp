@@ -4,7 +4,11 @@
 #include "network.h"
 #include "io.h"
 #include <Logger.h>
-#include <ESP8266httpUpdate.h>
+
+const char const_not_found[] = "not found";
+const char const_failed[] = "failed";
+const char const_set[] = "set";
+const char const_get[] = "get";
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd);
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd);
@@ -28,8 +32,13 @@ cmd_resp_t _err(String msg)
     return resp;
 }
 
+cmd_resp_t _invalid_cmd() 
+{
+    return _err("invalid command");
+}
+
 cmd_resp_t cmd_execute(cmd_t cmd)
-{    
+{
     if (cmd.domain.equalsIgnoreCase("io"))
         return _cmd_execute_io(cmd);
     if (cmd.domain.equalsIgnoreCase("mqtt"))
@@ -38,7 +47,7 @@ cmd_resp_t cmd_execute(cmd_t cmd)
         return _cmd_execute_network(cmd);
     if (cmd.domain.equalsIgnoreCase("system"))
         return _cmd_execute_system(cmd);
-    return _err("invalid_domain");
+    return _err("invalid domain");
 }
 
 cmd_resp_t _cmd_execute_io(cmd_t cmd)
@@ -46,39 +55,75 @@ cmd_resp_t _cmd_execute_io(cmd_t cmd)
     LOG_TRACE("_cmd_execute_io");
     if (cmd.prop == "")
     {
-        if (cmd.cmd.equalsIgnoreCase("get"))
+        if (cmd.cmd.equalsIgnoreCase(const_get))
             return _ok(io_status());
-        else if (cmd.cmd.equalsIgnoreCase("set"))
-            return io_update(cmd.param) ? _ok(io_status()) : _err("io_update_failed");
+        else if (cmd.cmd.equalsIgnoreCase(const_set))
+            return io_update(cmd.param) ? _ok(io_status()) : _err(const_failed);
     }
     else
     {
         unsigned int gpioindex = config_gpio_index(cmd.prop);
         if (gpioindex < 0)
-            return _err("io_notfound");
+            return _err(const_not_found);
 
         config_gpio_t gpio = config_gpio_get(gpioindex);
         if (gpio.func == IO_UNUSED)
-            return _err("io_unused");
+            return _err("unused");
 
-        if (cmd.cmd.equalsIgnoreCase("get"))
+        if (cmd.cmd.equalsIgnoreCase(const_get))
             return _ok(String(io_fetch(gpioindex)));
-        else if (cmd.cmd.equalsIgnoreCase("set"))
-            return io_update(gpioindex, cmd.param.toInt()) ? _ok(cmd.param) : _err("io_readonly");
+        else if (cmd.cmd.equalsIgnoreCase(const_set))
+            return io_update(gpioindex, cmd.param.toInt()) ? _ok(cmd.param) : _err("readonly");
     }
-    return _err("invalid_io_command");
+    return _invalid_cmd();
 }
 
 cmd_resp_t _cmd_execute_mqtt(cmd_t cmd)
 {
     LOG_TRACE("_cmd_execute_mqtt");
-    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase("ack"))
+    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase(MQTT_ACK))
         return _ok(MQTT_ACK);
-    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase("get"))
+    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase(const_get))
         return _ok(mqtt_status());
 
-    return _err("invalid_mqtt_command");
+    return _invalid_cmd();
 }
+
+#ifndef OTA_ENABLED
+cmd_resp_t _cmd_execute_ota_update(cmd_t cmd) 
+{
+    return _err("ota disabled");
+}
+#else
+#include <ESP8266httpUpdate.h>
+cmd_resp_t _cmd_execute_ota_update(cmd_t cmd)
+{
+    WiFiClient client;
+    t_httpUpdate_return ret = ESPhttpUpdate.update(client, cmd.param, VERSION);
+    const char ok[] = "updated rebooting";
+    cmd_resp_t res = _err("unknown update");
+    switch (ret)
+    {
+    case HTTP_UPDATE_FAILED:
+        char logmsg[100];
+        sprintf(logmsg, "%s - %s", const_failed, ESPhttpUpdate.getLastErrorString().c_str());
+        LOG_ERROR(logmsg);
+        res = _err(logmsg);
+        break;
+
+    case HTTP_UPDATE_NO_UPDATES:
+        LOG_WARN(const_not_found);
+        res = _err(const_not_found);
+        break;
+        
+    case HTTP_UPDATE_OK:
+        LOG_INFO(ok);
+        res = _ok(ok, CMD_RESP_ACTION_RESTART);
+        break;
+    }
+    return res;
+}
+#endif
 
 cmd_resp_t _cmd_execute_system(cmd_t cmd)
 {
@@ -86,33 +131,14 @@ cmd_resp_t _cmd_execute_system(cmd_t cmd)
     if (cmd.cmd.equalsIgnoreCase("ver"))
         return _ok(VERSION);
     if (cmd.cmd.equalsIgnoreCase("update"))
-    {
-        WiFiClient client;
-        t_httpUpdate_return ret = ESPhttpUpdate.update(client, cmd.param, VERSION);
-        switch (ret)
-        {
-        case HTTP_UPDATE_FAILED:
-            LOG_ERROR(ESPhttpUpdate.getLastErrorString());
-            return _err(String("update_failed:") + ESPhttpUpdate.getLastErrorString());
-
-        case HTTP_UPDATE_NO_UPDATES:
-            LOG_WARN("No updates");
-            return _err("update_not_found");
-
-        case HTTP_UPDATE_OK:
-            LOG_INFO("Firmware updated, rebooting");
-            return _ok("updated", CMD_RESP_ACTION_RESTART);
-        }
-        return _err("update_unknown");
-    }
-    return _err("invalid_system_command");
+        return _cmd_execute_ota_update(cmd);
+    return _invalid_cmd();
 }
 
 cmd_resp_t _cmd_execute_network(cmd_t cmd)
 {
     LOG_TRACE("_cmd_execute_network");
-    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase("get"))
+    if (cmd.prop.equals("") && cmd.cmd.equalsIgnoreCase(const_get))
         return _ok(network_status());
-
-    return _err("invalid_network_command");
+    return _invalid_cmd();
 }

@@ -4,8 +4,8 @@
 #include <WString.h>
 #include <PubSubClient.h>
 
-#define MQTT_ACK "ack"
-#define MQTT_ACK_INIT "init"
+const char MQTT_ACK[] = "ack";
+const char MQTT_ACK_INIT[] = "init";
 
 void mqtt_setup();
 void mqtt_execute();

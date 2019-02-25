@@ -5,24 +5,27 @@
 
 void logger_init();
 
+#ifdef LOG_ENABLED
 #define PRINT(message) Serial.print(message);
 #define PRINTLN(message) Serial.println(message);
-#define NEWLINE PRINTLN("");
 #define PRINTF(message, args...) Serial.printf(message, args);
+#else
+#define PRINT(message)
+#define PRINTLN(message)
+#define PRINTF(message, args...)
+#endif
+
 #define PRINTSTATUS(name, status) \
     PRINT("- ");                  \
     PRINT(name);                  \
     PRINT("\t: ");                \
-    PRINT(status);                \
-    NEWLINE;
+    PRINTLN(status);
 #define PRINTSTATUS2(name, status) \
     PRINT("- ");                   \
     PRINT(name);                   \
     PRINT("\t\t: ");               \
-    PRINT(status);                 \
-    NEWLINE;
+    PRINTLN(status);
 
-#ifndef LOG_DISABLED
 #define LOG(type, message) \
     PRINT("[");            \
     PRINT(type);           \
@@ -37,11 +40,7 @@ void logger_init();
     PRINT(millis());                 \
     PRINT("\t");                     \
     PRINTF(message, args);           \
-    NEWLINE;
-#else
-#define LOG(type, message)
-#define LOGF(type, message, args...)
-#endif
+    PRINTLN("");
 
 #ifdef LOG_LEVEL_TRACE
 #define LOG_ERROR(message) LOG("ERROR", message)

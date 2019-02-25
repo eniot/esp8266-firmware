@@ -24,8 +24,8 @@ String view_portal_index()
         String disabled = (gpio.func == IO_READONLY) ? "disabled": "";
 
         String className = io_fetch(pin) == HIGH ? "on" : "off";
-        content += "<form method='POST'><input type='hidden' name='io_pin' value='";
-        content += pin;
+        content += "<form method='POST'><input type='hidden' name='io' value='";
+        content += gpio.label;
         content += "' />";
         content += "<button type='submit' " + disabled + " class='btn-" + className + "'>" + gpio.label + "</button></form>";
     }

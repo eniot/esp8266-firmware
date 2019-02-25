@@ -14,7 +14,7 @@ String view_setup_index_content(config_setup_t data, String actionTitle)
 
     String enable_values[2] = {"1", "0"};
     String enable_displays[2] = {"Yes", "No"};
-    return "<form method=\"POST\" action=\"/\">" +
+    return "<form method=\"POST\" action=\"/api/setup\">" +
            html_display("Username", "admin") +
            html_field("text", "access", "Password", data.access) +
            "<br/>" +
@@ -31,8 +31,8 @@ String view_setup_index_content(config_setup_t data, String actionTitle)
            "</div>" +
            html_radios("dns", "Custom DNS", enable_values, enable_displays, 2, data.dns ? "1" : "0") +
            "<div id=\"dns-section\">" +
-           html_field("text", "dns1", "Primary DNS", data.dns1.toString(), "dhcp-input", false) +
-           html_field("text", "dns2", "Secondary DNS", data.dns2.toString(), "dhcp-input", false) +
+           html_field("text", "dns1", "Primary DNS", data.dns1.toString(), "dns-input", false) +
+           html_field("text", "dns2", "Secondary DNS", data.dns2.toString(), "dns-input", false) +
            "</div><br/>" +
            html_radios("mqtt", "MQTT Enable", enable_values, enable_displays, 2, data.mqtt ? "1" : "0") +
            "<div id=\"mqtt-section\">" +

@@ -3,6 +3,9 @@
 
 #include <ESP8266WebServer.h>
 
+static const char ContentJSON[] = "application/json";
+static const char ContentHTML[] = "text/html";
+
 void webserver_setup();
 void webserver_execute();
 void webserver_redirect(String path);
