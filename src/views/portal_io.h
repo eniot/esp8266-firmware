@@ -56,7 +56,7 @@ String view_portal_io(config_io_t data)
             rowContent += "</ul>";
         }
         String className = (data.gpio[i].func == IO_UNUSED) ? "" : "active";
-        String labelContent = "<a class='" + className + "' href='/io/" + String(i) + "'>" + _io_display(data.gpio[i].label, i) + "</a><br/>";
+        String labelContent = "<a class='" + className + "' href='/io/" + data.gpio[i].label + "'>" + _io_display(data.gpio[i].label, i) + "</a><br/>";
         switch (data.gpio[i].func)
         {
         case IO_READONLY:
