@@ -74,6 +74,5 @@ ioindex_t _fetch_iopin(String uri)
     char cpin[3];
     sscanf(uri.c_str(), "/io/%s", cpin);
     String spin(cpin);
-    spin.trim();
-    return config_gpio_index(spin);
+    return spin.toInt();
 }

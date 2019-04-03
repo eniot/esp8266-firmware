@@ -17,7 +17,7 @@ void _api_resp_true()
 void api_controller()
 {
     _webserver.on("/api", HTTP_GET, [] {
-        _webserver.send(200, ContentJSON, "[\"/api/network\",\"/api/mqtt\",\"/api/io\",\"/api/io/:io_label\",\"/api/access\",\"/api/setup\"]");
+        _webserver.send(200, ContentJSON, "[\"/api/network\",\"/api/mqtt\",\"/api/io\",\"/api/io/:gpio\",\"/api/access\",\"/api/setup\"]");
     });
 
     //  IO APIs
@@ -86,12 +86,12 @@ void api_controller()
     // Setup APIs
     _webserver.on("/api/setup", HTTP_POST, [] {
         if (config_setup_complete() && !_check_auth())
-            return _webserver.requestAuthentication();        
+            return _webserver.requestAuthentication();
         config_setup_t data;
         _update_setup_from_web(&data);
         config_setup(data);
-        _api_resp_true();        
-        ESP.restart();        
+        _api_resp_true();
+        ESP.restart();
     });
 }
 
