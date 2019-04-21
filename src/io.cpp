@@ -9,13 +9,12 @@ String io_status()
 {
     LOG_TRACE("io_status");
     config_io_t iodata = config_io_get();
-    StaticJsonBuffer<400> jb;
-    JsonArray &resp = jb.createArray();
+    StaticJsonDocument<400> resp;
     for (size_t i = 0; i < _IO_COUNT; i++)
     {
         if (iodata.gpio[i].func != IO_UNUSED)
         {
-            JsonObject &jobj = resp.createNestedObject();
+            JsonObject jobj = resp.createNestedObject();
             jobj["io"] = iodata.gpio[i].label.c_str();
             jobj["val"] = io_fetch(i);
             switch (iodata.gpio[i].func)
@@ -33,7 +32,7 @@ String io_status()
         }
     }
     String respStr;
-    resp.printTo(respStr);
+    serializeJson(resp, respStr);
     return respStr;
 }
 
@@ -71,7 +70,8 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist, bool publish)
         if (persist)
             config_io_commit();
     }
-    if(publish) {
+    if (publish)
+    {
         mqtt_send(String(gpio.value), String("io/") + gpio.label);
     }
     return true;
@@ -80,23 +80,23 @@ bool io_update(ioindex_t pin, uint8_t val, bool persist, bool publish)
 bool io_update(String status)
 {
     LOG_TRACE("io_update(status)");
-    StaticJsonBuffer<400> jb;
-    JsonArray &jstat = jb.parseArray(status);
-    if (!jstat.success())
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, status);
+    if (error)
         return false;
-
+    JsonArray jstat = doc.to<JsonArray>();
     for (size_t i = 0; i < jstat.size(); i++)
     {
-        if (!jstat.is<JsonObject>(i))
+        if (!jstat[i].is<JsonObject>())
             continue;
 
-        JsonObject &jobj = jstat.get<JsonObject>(i);
-        unsigned int gpioindex = config_gpio_index(jobj.get<String>("io"));
+        JsonObject jobj = jstat[i].as<JsonObject>();
+        unsigned int gpioindex = config_gpio_index(jobj["io"]);
 
         if (gpioindex < 0)
             continue;
 
-        io_update(gpioindex, jobj.get<int>("val"), false);
+        io_update(gpioindex, jobj["val"], false);
     }
     config_io_commit();
     return true;

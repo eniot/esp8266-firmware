@@ -63,8 +63,7 @@ void network_execute()
 
 String network_status()
 {
-    StaticJsonBuffer<400> jb;
-    JsonObject &net = jb.createObject();
+    StaticJsonDocument<400> net;
     net["mode"] = WiFi.getMode() == WIFI_STA ? "STA" : "AP";
     if (WiFi.getMode() == WIFI_STA)
     {
@@ -84,6 +83,6 @@ String network_status()
         net["ip"] = WiFi.softAPIP().toString();
     }
     String status;
-    net.printTo(status);
+    serializeJson(net, status);
     return status;
 }

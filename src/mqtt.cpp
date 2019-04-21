@@ -128,8 +128,7 @@ void _callback(char *topic, byte *payload, size_t length)
 
 String mqtt_status()
 {
-    StaticJsonBuffer<400> jb;
-    JsonObject &root = jb.createObject();
+    StaticJsonDocument<400> root;
     root["enabled"] = _mqtt_enabled;
     root["connected"] = _mqttclient.connected() == 1;
     root["state"] = mqtt_state_str();
@@ -141,7 +140,7 @@ String mqtt_status()
     root["topic_out"] = _mqtt_topic_out;
     root["topic_err"] = _mqtt_topic_err;
     String status;
-    root.printTo(status);
+    serializeJson(root, status);
     return status;
 }
 
